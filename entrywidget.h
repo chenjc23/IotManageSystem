@@ -25,7 +25,7 @@ public slots:
     void signup();
 
 protected:
-    virtual void enterEvent(QEvent *event) override;
+    //virtual void enterEvent(QEvent *event) override;
 
 private:
     Ui::EntryWidget *ui;

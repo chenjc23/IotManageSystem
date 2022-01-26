@@ -25,7 +25,7 @@ EntryWidget::EntryWidget(QWidget *parent)
     // 创建user表
     QSqlError err = dbconn::dbUserInit();
     if (err.type() != QSqlError::NoError) {
-        QMessageBox::critical(this, "Unable to init database", err.text());
+        QMessageBox::critical(this, "Unable to create user table", err.text());
     }
 
     //
@@ -58,9 +58,10 @@ void EntryWidget::login()
     if (query.next()) {
         if (query.value(0).toString() == passwordMd5) {
             // QMessageBox::information(this, "Sucess", "登录成功");
-            homeWidget = new HomeWidget;
+            homeWidget = new HomeWidget(this);
             this -> hide();
             homeWidget -> show();
+            return;
         } else {
             QMessageBox::warning(this, "Unvalid", "密码错误，请重新输入");
             return;
@@ -70,7 +71,7 @@ void EntryWidget::login()
         return;
     }
     db.close();
-
+    return;
 }
 
 void EntryWidget::signup()
@@ -108,6 +109,7 @@ void EntryWidget::signup()
     }
     QMessageBox::information(this, "Signup sucess", "注册成功");
     db.close();
+    return;
 }
 
 bool EntryWidget::inputCheck()
@@ -134,10 +136,11 @@ bool EntryWidget::inputCheck()
 void EntryWidget::showError(const QSqlError &err)
 {
     QMessageBox::critical(this, "DB operation fail", err.text());
+    return;
 }
 
-void EntryWidget::enterEvent(QEvent *event)
-{
-    qDebug() << event->type();
-}
+//void EntryWidget::enterEvent(QEvent *event)
+//{
+//    qDebug() << event->type();
+//}
 

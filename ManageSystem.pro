@@ -17,20 +17,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     ../config.cpp \
+    buttons.cpp \
+    devicewidget.cpp \
     homewidget.cpp \
     main.cpp \
-    entrywidget.cpp
+    entrywidget.cpp \
+    productwidget.cpp \
+    util.cpp
 
 HEADERS += \
     ../config.h \
-    ../dbconnect.h \
+    buttons.h \
+    devicewidget.h \
     entrywidget.h \
     homewidget.h \
+    productwidget.h \
     util.h
 
 FORMS += \
+    devicewidget.ui \
     entrywidget.ui \
-    homewidget.ui
+    homewidget.ui \
+    productwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -38,4 +46,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    rec.qrc
+    res.qrc

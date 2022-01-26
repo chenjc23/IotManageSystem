@@ -6,13 +6,151 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>1300</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>物联网管理系统</string>
   </property>
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,7">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMaximumSize</enum>
+     </property>
+     <item>
+      <widget class="QPushButton" name="headBt">
+       <property name="palette">
+        <palette>
+         <active/>
+         <inactive/>
+         <disabled/>
+        </palette>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: bold 16pt &quot;宋体&quot;; </string>
+       </property>
+       <property name="text">
+        <string>设备管理    </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="sizeConstraint">
+         <enum>QLayout::SetDefaultConstraint</enum>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="productBt">
+          <property name="styleSheet">
+           <string notr="true">font: 14pt &quot;宋体&quot;;background-color: #f5f5f5;</string>
+          </property>
+          <property name="text">
+           <string>产品 </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="deviceBt">
+          <property name="styleSheet">
+           <string notr="true">font: 14pt &quot;宋体&quot;;background-color: #f5f5f5;</string>
+          </property>
+          <property name="text">
+           <string>设备 </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="groupBt">
+          <property name="styleSheet">
+           <string notr="true">font: 14pt &quot;宋体&quot;;background-color: #f5f5f5;</string>
+          </property>
+          <property name="text">
+           <string>分组 </string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="dataAnalyseBt">
+       <property name="styleSheet">
+        <string notr="true">font: bold 16pt &quot;宋体&quot;;</string>
+       </property>
+       <property name="text">
+        <string>数据分析   </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="docBt">
+       <property name="styleSheet">
+        <string notr="true">font: bold 16pt &quot;宋体&quot;;</string>
+       </property>
+       <property name="text">
+        <string> 文档与工具  </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="feedBackBt">
+       <property name="styleSheet">
+        <string notr="true">font: bold 16pt &quot;宋体&quot;;</string>
+       </property>
+       <property name="text">
+        <string>新版反馈    </string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QStackedWidget" name="stackedWidget">
+     <widget class="QWidget" name="page"/>
+     <widget class="QWidget" name="page_2"/>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

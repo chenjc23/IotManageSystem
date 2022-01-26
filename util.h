@@ -7,41 +7,23 @@
 
 namespace dbconn{
 
-QSqlDatabase getDbOpenConn(QWidget *parent = nullptr)
+QSqlDatabase getDbOpenConn(QWidget *parent = nullptr);
+
+QSqlError dbUserInit();
+
+QSqlError dbProductInit();
+
+}
+
+class ProductSqlModel : public QSqlQueryModel
 {
-    Config config;
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setDatabaseName(config.dbDatabaseName);
-    db.setHostName(config.dbHostName);
-    db.setUserName(config.dbUserName);
-    db.setPassword(config.dbPassword);
-    if (!db.open()) {
-        if (parent)
-            QMessageBox::information(parent, "DB Connection Fail", "无法连接数据库");
-    }
-    return db;
-}
-
-QSqlError dbUserInit()
-{
-    QSqlDatabase db = getDbOpenConn();
-    if (db.lastError().type() != QSqlError::NoError)
-        return db.lastError();
-
-    if (db.tables().contains("user", Qt::CaseInsensitive))
-        return QSqlError();
-
-    QSqlQuery query;
-    QString userCreationSql = "create table user(id integer primary key auto_increment, "
-                              "name varchar(20) not null, password char(32)) not null";
-    if (!query.exec(userCreationSql))
-        return query.lastError();
-
-    return QSqlError();
-}
+public:
+    explicit ProductSqlModel(QObject *parent = nullptr);
+    ~ProductSqlModel();
+    QVariant data(const QModelIndex &item, int role = Qt::DisplayRole) const override;
+};
 
 
-}
 
 
 #endif // UTIL_H

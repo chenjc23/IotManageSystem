@@ -2,6 +2,8 @@
 #define HOMEWIDGET_H
 
 #include <QWidget>
+#include "productwidget.h"
+#include "devicewidget.h"
 
 namespace Ui {
 class HomeWidget;
@@ -15,9 +17,17 @@ public:
     explicit HomeWidget(QWidget *parent = nullptr);
     ~HomeWidget();
 
+public slots:
+    void switchVGroup();
+    void showProductWidget();
+    void showDeviceWidget();
+
 
 private:
     Ui::HomeWidget *ui;
+    ProductWidget * productWidget;
+    DeviceWidget * deviceWidget;
+
 };
 
 #endif // HOMEWIDGET_H
