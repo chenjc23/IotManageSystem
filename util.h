@@ -7,7 +7,7 @@
 
 namespace dbconn{
 
-QSqlDatabase getDbOpenConn(QWidget *parent = nullptr);
+QSqlDatabase getDbOpenConn(QWidget *parent = nullptr, QString name = "");
 
 QSqlError dbUserInit();
 

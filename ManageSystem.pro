@@ -19,6 +19,7 @@ SOURCES += \
     ../config.cpp \
     buttons.cpp \
     devicewidget.cpp \
+    editproductwidget.cpp \
     homewidget.cpp \
     main.cpp \
     entrywidget.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     ../config.h \
     buttons.h \
     devicewidget.h \
+    editproductwidget.h \
     entrywidget.h \
     homewidget.h \
     productwidget.h \

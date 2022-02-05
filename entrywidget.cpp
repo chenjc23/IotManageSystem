@@ -58,7 +58,7 @@ void EntryWidget::login()
     if (query.next()) {
         if (query.value(0).toString() == passwordMd5) {
             // QMessageBox::information(this, "Sucess", "登录成功");
-            homeWidget = new HomeWidget(this);
+            homeWidget = new HomeWidget;
             this -> hide();
             homeWidget -> show();
             return;

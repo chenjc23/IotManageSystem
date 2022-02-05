@@ -1,10 +1,15 @@
 #include "util.h"
 #include <QtSql>
 
-QSqlDatabase dbconn::getDbOpenConn(QWidget *parent)
+QSqlDatabase dbconn::getDbOpenConn(QWidget *parent, QString name)
 {
     Config config;
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+    QSqlDatabase db;
+    if (!name.isEmpty())
+        db = QSqlDatabase::addDatabase("QMYSQL", name);
+    else
+        db = QSqlDatabase::addDatabase("QMYSQL");
+
     db.setDatabaseName(config.dbDatabaseName);
     db.setHostName(config.dbHostName);
     db.setUserName(config.dbUserName);
@@ -19,7 +24,7 @@ QSqlDatabase dbconn::getDbOpenConn(QWidget *parent)
 // user表初始化
 QSqlError dbconn::dbUserInit()
 {
-    QSqlDatabase db = getDbOpenConn();
+    QSqlDatabase db = getDbOpenConn(nullptr, "user");
     if (db.lastError().type() != QSqlError::NoError)
         return db.lastError();
 
@@ -39,7 +44,7 @@ QSqlError dbconn::dbUserInit()
 // product表初始化
 QSqlError dbconn::dbProductInit()
 {
-    QSqlDatabase db = getDbOpenConn();
+    QSqlDatabase db = getDbOpenConn(nullptr, "product");
     if (db.lastError().type() != QSqlError::NoError)
         return db.lastError();
 
@@ -49,8 +54,13 @@ QSqlError dbconn::dbProductInit()
     QSqlQuery query;
     // 创建product表
     QString productCreationSql = "create table product(id integer primary key auto_increment, "
-                                 "name varchar(30), product_type varchar(30), node_type varchar(30), "
-                                 "connect_method varchar(30), data_format varchar(30), description varchar(200), "
+                                 "name varchar(30), "
+                                 "product_type varchar(30), "
+                                 "node_type varchar(30), "
+                                 "protocol varchar(20), "
+                                 "connect_method varchar(30), "
+                                 "data_format varchar(30), "
+                                 "description varchar(200), "
                                  "create_time datetime default now())";
     if (!query.exec(productCreationSql))
         return query.lastError();

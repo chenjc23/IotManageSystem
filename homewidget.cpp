@@ -12,10 +12,12 @@ HomeWidget::HomeWidget(QWidget *parent) :
     this->setFixedSize(1300,750);
     this->setStyleSheet("QPushButton {padding: 10px;}");
 
-    productWidget = new ProductWidget(ui->stackedWidget);
-    deviceWidget = new DeviceWidget(ui->stackedWidget);
-    ui->stackedWidget->addWidget(productWidget);
-    ui->stackedWidget->addWidget(deviceWidget);
+    productWidget = new ProductWidget;
+    deviceWidget = new DeviceWidget;
+    ui->stackedWidget->insertWidget(1, productWidget);
+    ui->stackedWidget->insertWidget(2, deviceWidget);
+//    ui->stackedWidget->addWidget(productWidget);
+//    ui->stackedWidget->addWidget(deviceWidget);
     ui->stackedWidget->setCurrentWidget(productWidget);
 
     connect(ui->headBt, SIGNAL(clicked()), this, SLOT(switchVGroup()));
@@ -40,6 +42,7 @@ void HomeWidget::switchVGroup()
 
 void HomeWidget::showProductWidget()
 {
+    productWidget->refresh();
     ui->stackedWidget->setCurrentWidget(productWidget);
 }
 

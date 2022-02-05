@@ -18,15 +18,18 @@ public:
     explicit ProductWidget(QWidget *parent = nullptr);
     ~ProductWidget();
     void updateModel();
-    void createView();
+    void updateView();
+    void refresh();
 
 public slots:
+    void onCreateBtClicked();
     void editProduct(int itemId);
-    void deleteProduct(int itemId);
+    void deleteProduct(int itemId);  
 
 private:
     Ui::ProductWidget *ui;
     // QSqlQueryModel * productModel;
+    QPushButton * createProductBt;
     ProductSqlModel * productModel;
     QTableView * productView;
 
