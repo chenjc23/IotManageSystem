@@ -24,7 +24,9 @@ SOURCES += \
     main.cpp \
     entrywidget.cpp \
     productwidget.cpp \
-    util.cpp
+    updatefuncwidget.cpp \
+    util.cpp \
+    viewproductwidget.cpp
 
 HEADERS += \
     ../config.h \
@@ -34,7 +36,9 @@ HEADERS += \
     entrywidget.h \
     homewidget.h \
     productwidget.h \
-    util.h
+    updatefuncwidget.h \
+    util.h \
+    viewproductwidget.h
 
 FORMS += \
     devicewidget.ui \

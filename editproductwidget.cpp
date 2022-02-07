@@ -4,7 +4,6 @@
 #include <QtWidgets>
 #include "util.h"
 #include <QtSql>
-#include <QDebug>
 
 EditProductWidget::EditProductWidget(int productID, QWidget *parent) :
     QWidget(parent),
@@ -157,7 +156,6 @@ void EditProductWidget::onConfirmBtClicked()
         query.addBindValue(typeComboBox->currentText());
     }
     query.addBindValue(nodeBtGroup->checkedButton()->text());
-    qDebug() << nodeBtGroup->checkedButton()->text() << connWayComboBox->currentText();
     query.addBindValue(connWayComboBox->currentText());
     query.addBindValue(protocolComboBox->currentText());
     query.addBindValue(dataFormatComboBox->currentText());
@@ -167,21 +165,25 @@ void EditProductWidget::onConfirmBtClicked()
         query.addBindValue(productID);
     query.exec();
     // 切换回产品页面
-    this->switchToProductWidget();
+    emit switchSignal();
 }
 
 void EditProductWidget::onCancelBtClicked()
 {
-    QMessageBox cancelMsgBox;
-    cancelMsgBox.resize(200, 100);
-    cancelMsgBox.setText("取消将舍弃当前操作");
-    cancelMsgBox.setInformativeText("确认取消？");
-    cancelMsgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-    cancelMsgBox.setDefaultButton(QMessageBox::Ok);
-    int result = cancelMsgBox.exec();
-    if (result == QMessageBox::Ok)
-        this->switchToProductWidget();
+    if (msg::getCancelMsgBox() == QMessageBox::Ok)
+        emit switchSignal();
+        //this->switchToProductWidget();
+//    QMessageBox cancelMsgBox;
+//    cancelMsgBox.resize(200, 100);
+//    cancelMsgBox.setText("取消将舍弃当前操作");
+//    cancelMsgBox.setInformativeText("确认取消？");
+//    cancelMsgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+//    cancelMsgBox.setDefaultButton(QMessageBox::Ok);
+//    int result = cancelMsgBox.exec();
+//    if (result == QMessageBox::Ok)
+//        this->switchToProductWidget();
 }
+
 
 void EditProductWidget::comboBoxSetModel()
 {
@@ -274,13 +276,4 @@ void EditProductWidget::setMapper()
     }
     mapper->toFirst();
 }
-
-void EditProductWidget::switchToProductWidget()
-{
-    QStackedWidget * stackWidget = static_cast<QStackedWidget *>(this->parentWidget());
-    static_cast<ProductWidget *>(stackWidget->widget(1))->refresh();
-    stackWidget->setCurrentIndex(1);
-    stackWidget->removeWidget(this);
-}
-
 

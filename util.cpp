@@ -48,38 +48,56 @@ QSqlError dbconn::dbProductInit()
     if (db.lastError().type() != QSqlError::NoError)
         return db.lastError();
 
-    if (db.tables().contains("product", Qt::CaseInsensitive))
-        return QSqlError();
-
     QSqlQuery query;
-    // 创建product表
-    QString productCreationSql = "create table product(id integer primary key auto_increment, "
-                                 "name varchar(30), "
-                                 "product_type varchar(30), "
-                                 "node_type varchar(30), "
-                                 "protocol varchar(20), "
-                                 "connect_method varchar(30), "
-                                 "data_format varchar(30), "
-                                 "description varchar(200), "
-                                 "create_time datetime default now())";
-    if (!query.exec(productCreationSql))
-        return query.lastError();
+
+    if (!db.tables().contains("product", Qt::CaseInsensitive)) {
+        // 创建product表
+        QString productCreationSql = "create table product(id integer primary key auto_increment, "
+                                     "name varchar(30), "
+                                     "product_type varchar(30), "
+                                     "node_type varchar(30), "
+                                     "protocol varchar(20), "
+                                     "connect_method varchar(30), "
+                                     "data_format varchar(30), "
+                                     "description varchar(200), "
+                                     "create_time datetime default now(), "
+                                     "func_ids varchar(100) default '')";
+        if (!query.exec(productCreationSql))
+            return query.lastError();
+    }
+
+    if (!db.tables().contains("attr", Qt::CaseInsensitive)) {
+        // 创建attr表
+        QString attrCreationSql = "create table attr(id integer primary key auto_increment, "
+                                  "product_id integer,"
+                                  "func_name varchar(20),"
+                                  "identifier varchar(20),"
+                                  "data_type varchar(20),"
+                                  "unit varchar(20),"
+                                  "description varchar(100),"
+                                  "foreign key (product_id) references product(id))";
+        if (!query.exec(attrCreationSql))
+            return query.lastError();
+    }
 
     return QSqlError();
+
+
+
 }
 
-ProductSqlModel::ProductSqlModel(QObject *parent) :
+CenterAlignSqlModel::CenterAlignSqlModel(QObject *parent) :
     QSqlQueryModel(parent)
 {
 
 }
 
-ProductSqlModel::~ProductSqlModel()
+CenterAlignSqlModel::~CenterAlignSqlModel()
 {
 
 }
 
-QVariant ProductSqlModel::data(const QModelIndex &item, int role) const
+QVariant CenterAlignSqlModel::data(const QModelIndex &item, int role) const
 {
     QVariant value = QSqlQueryModel::data(item, role);
     if (role == Qt::TextAlignmentRole) {
@@ -87,4 +105,28 @@ QVariant ProductSqlModel::data(const QModelIndex &item, int role) const
         return value;
     }
     return value;
+}
+
+BlueBt::BlueBt(const QString &text, QWidget *parent) :
+    QPushButton(text, parent)
+{
+    this->setStyleSheet("background-color: #0066CC; color: white; "
+                        "border: none");
+}
+
+BlueBt::~BlueBt()
+{
+
+}
+
+int msg::getCancelMsgBox()
+{
+    QMessageBox cancelMsgBox;
+    cancelMsgBox.setWindowFlag(Qt::WindowStaysOnTopHint);
+    cancelMsgBox.resize(200, 100);
+    cancelMsgBox.setText("取消将舍弃当前操作");
+    cancelMsgBox.setInformativeText("确认取消？");
+    cancelMsgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    cancelMsgBox.setDefaultButton(QMessageBox::Ok);
+    return cancelMsgBox.exec();
 }

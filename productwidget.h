@@ -23,6 +23,7 @@ public:
 
 public slots:
     void onCreateBtClicked();
+    void viewProduct(int itemId);
     void editProduct(int itemId);
     void deleteProduct(int itemId);  
 
@@ -30,7 +31,7 @@ private:
     Ui::ProductWidget *ui;
     // QSqlQueryModel * productModel;
     QPushButton * createProductBt;
-    ProductSqlModel * productModel;
+    CenterAlignSqlModel * productModel;
     QTableView * productView;
 
 

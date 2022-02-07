@@ -20,7 +20,6 @@ private:
     void setBtGroup();
     bool setSqlModel();
     void setMapper();
-    void switchToProductWidget();
 
 private:
     int productID;
@@ -41,11 +40,8 @@ private:
     QPushButton * confirmBt;
     QPushButton * cancelBt;
 
-
-
-
-
 signals:
+    void switchSignal();
 
 };
 

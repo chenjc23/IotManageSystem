@@ -4,6 +4,7 @@
 #include <../config.h>
 #include <QtSql>
 #include <QMessageBox>
+#include <QPushButton>
 
 namespace dbconn{
 
@@ -15,12 +16,26 @@ QSqlError dbProductInit();
 
 }
 
-class ProductSqlModel : public QSqlQueryModel
+namespace msg{
+
+int getCancelMsgBox();
+
+}
+
+class CenterAlignSqlModel : public QSqlQueryModel
 {
 public:
-    explicit ProductSqlModel(QObject *parent = nullptr);
-    ~ProductSqlModel();
+    explicit CenterAlignSqlModel(QObject *parent = nullptr);
+    ~CenterAlignSqlModel();
     QVariant data(const QModelIndex &item, int role = Qt::DisplayRole) const override;
+};
+
+class BlueBt : public QPushButton
+{
+public:
+    explicit BlueBt(const QString &text, QWidget *parent = nullptr);
+    ~BlueBt();
+
 };
 
 

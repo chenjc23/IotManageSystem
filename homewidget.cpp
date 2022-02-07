@@ -8,6 +8,13 @@ HomeWidget::HomeWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::HomeWidget)
 {
+    // 检查数据库中product表是否存在，不存在则新建product表
+    QSqlError err = dbconn::dbProductInit();
+    if (err.type() != QSqlError::NoError) {
+        QMessageBox::critical(this, "Unable to create product table", err.text());
+    }
+
+
     ui->setupUi(this);
     this->setFixedSize(1300,750);
     this->setStyleSheet("QPushButton {padding: 10px;}");

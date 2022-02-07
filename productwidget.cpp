@@ -3,6 +3,7 @@
 #include "util.h"
 #include "buttons.h"
 #include "editproductwidget.h"
+#include "viewproductwidget.h"
 #include <QtWidgets>
 #include <QtSql>
 #include <QDebug>
@@ -11,12 +12,6 @@ ProductWidget::ProductWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ProductWidget)
 {
-    // 检查数据库中product表是否存在，不存在则新建product表
-    QSqlError err = dbconn::dbProductInit();
-    if (err.type() != QSqlError::NoError) {
-        QMessageBox::critical(this, "Unable to create product table", err.text());
-    }
-
     // 创建产品界面控件
     ui->setupUi(this);
     QLabel * headTitle = new QLabel("物联网平台 / 设备管理 / 产品");
@@ -51,7 +46,7 @@ ProductWidget::ProductWidget(QWidget *parent) :
     this -> setLayout(mainLayout);
 
     // 模型与视图
-    productModel = new ProductSqlModel(this);
+    productModel = new CenterAlignSqlModel(this);
     productView = new QTableView(this);
     // 视图添加模型
     productView->setModel(productModel);
@@ -94,7 +89,8 @@ void ProductWidget::refresh()
         ProductButtons * productBt = new ProductButtons(productId, this);
         // 视图中添加产品编辑和删除标签
         productView->setIndexWidget(productModel->index(rowNum, productModel->columnCount()-1), productBt);
-        // 连接标签与相应槽函数
+        // 连接标签与相应槽函数1
+        connect(productBt, SIGNAL(viewLabelClicked(int)), this, SLOT(viewProduct(int)));
         connect(productBt, SIGNAL(editLabelClicked(int)), this, SLOT(editProduct(int)));
         connect(productBt, SIGNAL(deleteLabelClicked(int)), this, SLOT(deleteProduct(int)));
     }
@@ -106,12 +102,25 @@ void ProductWidget::onCreateBtClicked()
     editProduct(0);
 }
 
+void ProductWidget::viewProduct(int itemId)
+{
+    QStackedWidget * stackWidget = static_cast<QStackedWidget *>(this->parentWidget());
+    ViewProductWidget * viewProductWidget = new ViewProductWidget(itemId, stackWidget);
+    stackWidget->addWidget(viewProductWidget);
+    stackWidget->setCurrentWidget(viewProductWidget);
+}
+
 void ProductWidget::editProduct(int itemId)
 {
     QStackedWidget * stackWidget = static_cast<QStackedWidget *>(this->parentWidget());
     EditProductWidget * editProductWidget = new EditProductWidget(itemId, stackWidget);
     stackWidget->addWidget(editProductWidget);
     stackWidget->setCurrentWidget(editProductWidget);
+    connect(editProductWidget, &EditProductWidget::switchSignal, [=]{
+        this->refresh();
+        stackWidget->setCurrentWidget(this);
+        stackWidget->removeWidget(editProductWidget);
+    });
 }
 
 void ProductWidget::deleteProduct(int itemId)
