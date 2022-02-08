@@ -6,11 +6,11 @@
 #include <QSqlQueryModel>
 #include <QDataWidgetMapper>
 
-class UpdateFuncWidget : public QWidget
+class EditFuncWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit UpdateFuncWidget(int productID, int attrID = 0, QWidget *parent = nullptr);
+    explicit EditFuncWidget(int productID, int attrID = 0, QWidget *parent = nullptr);
 
 public slots:
     void onConfirmBtClicked();
@@ -36,7 +36,7 @@ private:
     void setMapper();
 
 signals:
-    void updateFinished();
+    void editFinished();
 
 };
 

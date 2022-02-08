@@ -1,7 +1,7 @@
 #include "productwidget.h"
 #include "ui_productwidget.h"
 #include "util.h"
-#include "buttons.h"
+#include "labels.h"
 #include "editproductwidget.h"
 #include "viewproductwidget.h"
 #include <QtWidgets>
@@ -86,7 +86,7 @@ void ProductWidget::refresh()
     for (int rowNum = 0; rowNum < productModel->rowCount(); ++rowNum) {
         int productId = productModel->data(productModel->index(rowNum, productModel->columnCount()-1)).toInt();
         // 创建产品编辑和删除标签
-        ProductButtons * productBt = new ProductButtons(productId, this);
+        StdComboLabels * productBt = new StdComboLabels(productId, this);
         // 视图中添加产品编辑和删除标签
         productView->setIndexWidget(productModel->index(rowNum, productModel->columnCount()-1), productBt);
         // 连接标签与相应槽函数1
@@ -125,14 +125,7 @@ void ProductWidget::editProduct(int itemId)
 
 void ProductWidget::deleteProduct(int itemId)
 {
-    QMessageBox deleteMsgBox;
-    deleteMsgBox.resize(200,100);
-    deleteMsgBox.setText("确定要删除该产品吗？");
-    deleteMsgBox.setInformativeText("删除产品会导致对应设备的删除。");
-    deleteMsgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-    deleteMsgBox.setDefaultButton(QMessageBox::Ok);
-    int result = deleteMsgBox.exec();
-    if (result == QMessageBox::Ok) {
+    if (msg::getCancelMsgBox() == QMessageBox::Ok) {
         QSqlQuery query;
         query.exec(tr("delete from product where id=%1").arg(itemId));
         this->refresh();

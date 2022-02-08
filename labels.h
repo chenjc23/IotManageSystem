@@ -5,12 +5,12 @@
 #include <QLabel>
 #include <QPushButton>
 
-class ProductButtons : public QWidget
+class StdComboLabels : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ProductButtons(int id, QWidget *parent = nullptr);
-    ~ProductButtons();
+    explicit StdComboLabels(int id, QWidget *parent = nullptr);
+    ~StdComboLabels();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *ev);

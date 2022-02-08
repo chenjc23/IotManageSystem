@@ -1,9 +1,9 @@
-#include "updatefuncwidget.h"
+#include "editfuncwidget.h"
 #include "util.h"
 #include <QDesktopWidget>
 #include <QDebug>
 
-UpdateFuncWidget::UpdateFuncWidget(int productID, int attrID, QWidget *parent) :
+EditFuncWidget::EditFuncWidget(int productID, int attrID, QWidget *parent) :
     QWidget(parent),
     productID(productID),
     attrID(attrID)
@@ -62,6 +62,12 @@ UpdateFuncWidget::UpdateFuncWidget(int productID, int attrID, QWidget *parent) :
     if (this->setSqlModel())
         this->setMapper();
 
+    // 若是编辑页
+    if (attrID) {
+        identifierEdit->setDisabled(true);
+        dataFormatComboBox->setDisabled(true);
+    }
+
     // 调整窗口属性
     QDesktopWidget * desktop = QApplication::desktop();
     this->setFixedSize(350, 450);
@@ -70,12 +76,12 @@ UpdateFuncWidget::UpdateFuncWidget(int productID, int attrID, QWidget *parent) :
     this->setAttribute(Qt::WA_DeleteOnClose);
     this->setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 
-    connect(confirmBt, &QPushButton::clicked, this, &UpdateFuncWidget::onConfirmBtClicked);
-    connect(cancelBt, &QPushButton::clicked, this, &UpdateFuncWidget::closeWidget);
+    connect(confirmBt, &QPushButton::clicked, this, &EditFuncWidget::onConfirmBtClicked);
+    connect(cancelBt, &QPushButton::clicked, this, &EditFuncWidget::closeWidget);
 
 }
 
-void UpdateFuncWidget::onConfirmBtClicked()
+void EditFuncWidget::onConfirmBtClicked()
 {
     QString updateSql;
     if (attrID) {
@@ -107,27 +113,29 @@ void UpdateFuncWidget::onConfirmBtClicked()
     }
     // 若是插入功能，更新product表
     if (query.exec() && !attrID) {
-        query.exec("select last_insert_id()");
-        query.first();
-        QString newID = query.value(0).toString();
-        query.prepare("update product "
-                      "set func_ids=concat(func_ids, ?) where id=?");
-        query.addBindValue(newID+",");
-        query.addBindValue(productID);
-        query.exec();
+        query.exec(tr("alter table product_%1_attr "
+        "add %2 %3").arg(productID).arg(identifierEdit->text()).arg(dataFormatComboBox->currentText()));
+//        query.exec("select last_insert_id()");
+//        query.first();
+//        QString newID = query.value(0).toString();
+//        query.prepare("update product "
+//                      "set func_ids=concat(func_ids, ?) where id=?");
+//        query.addBindValue(newID+",");
+//        query.addBindValue(productID);
+//        query.exec();
     }
-    emit updateFinished();
+    emit editFinished();
     this->close();
 }
 
-void UpdateFuncWidget::closeWidget()
+void EditFuncWidget::closeWidget()
 {
     if (msg::getCancelMsgBox() == QMessageBox::Ok) {
         this->close();
     }
 }
 
-bool UpdateFuncWidget::setSqlModel()
+bool EditFuncWidget::setSqlModel()
 {
     if (!attrID) return false;
     sqlModel = new QSqlQueryModel(this);
@@ -140,7 +148,7 @@ bool UpdateFuncWidget::setSqlModel()
     return true;
 }
 
-void UpdateFuncWidget::setMapper()
+void EditFuncWidget::setMapper()
 {
     mapper = new QDataWidgetMapper(this);
     mapper->setModel(sqlModel);

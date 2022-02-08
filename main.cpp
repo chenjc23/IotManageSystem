@@ -3,7 +3,7 @@
 #include <QApplication>
 
 #include "homewidget.h"
-#include "buttons.h"
+#include "labels.h"
 #include "productwidget.h"
 #include "editproductwidget.h"
 #include "util.h"

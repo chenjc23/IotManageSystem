@@ -3,8 +3,10 @@
 
 #include <../config.h>
 #include <QtSql>
+#include <QtWidgets>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QDesktopWidget>
 
 namespace dbconn{
 
@@ -14,11 +16,21 @@ QSqlError dbUserInit();
 
 QSqlError dbProductInit();
 
+QSqlError dbDeviceInit();
+
 }
 
 namespace msg{
 
 int getCancelMsgBox();
+
+}
+
+namespace util {
+
+void setCenterShow(QWidget * widget);
+
+void setBgColor(QWidget * widget, const QString &color = "#99CCCC");
 
 }
 

@@ -1,5 +1,7 @@
 #include "util.h"
 #include <QtSql>
+#include <QtWidgets>
+#include <QDesktopWidget>
 
 QSqlDatabase dbconn::getDbOpenConn(QWidget *parent, QString name)
 {
@@ -61,7 +63,8 @@ QSqlError dbconn::dbProductInit()
                                      "data_format varchar(30), "
                                      "description varchar(200), "
                                      "create_time datetime default now(), "
-                                     "func_ids varchar(100) default '')";
+                                     "func_ids varchar(100) default '', "
+                                     "device_ids varchar(100) default '')";
         if (!query.exec(productCreationSql))
             return query.lastError();
     }
@@ -82,9 +85,38 @@ QSqlError dbconn::dbProductInit()
 
     return QSqlError();
 
-
-
 }
+
+QSqlError dbconn::dbDeviceInit()
+{
+    QSqlDatabase db = getDbOpenConn(nullptr, "device");
+    if (db.lastError().type() != QSqlError::NoError)
+        return db.lastError();
+
+    if (db.tables().contains("device", Qt::CaseInsensitive))
+        return QSqlError();
+
+    QSqlQuery query;
+    // 创建device表
+    QString deviceCreationSql = "create table device(id integer primary key auto_increment, "
+               "name varchar(20), "
+               "remark varchar(20), "
+               "product_id integer, "
+               "ip varchar(20), "
+               "create_time datetime default now(), "
+               "activated_time datetime, "
+               "last_time datetime, "
+               "current_state varchar(20) default '未激活', "
+               "foreign key (product_id) references product(id) "
+               "on delete cascade on update cascade)";
+    if (!query.exec(deviceCreationSql))
+        return query.lastError();
+
+    db.close();
+    return QSqlError();
+}
+
+
 
 CenterAlignSqlModel::CenterAlignSqlModel(QObject *parent) :
     QSqlQueryModel(parent)
@@ -129,4 +161,21 @@ int msg::getCancelMsgBox()
     cancelMsgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     cancelMsgBox.setDefaultButton(QMessageBox::Ok);
     return cancelMsgBox.exec();
+}
+
+
+
+void util::setCenterShow(QWidget *widget)
+{
+    QDesktopWidget * desktop = QApplication::desktop();
+    widget->setGeometry((desktop->width()-widget->width())/2,
+        (desktop->height()-widget->height())/2, widget->width(), widget->height());
+}
+
+void util::setBgColor(QWidget *widget, const QString &color)
+{
+    QPalette mainPalette = widget->palette();
+    mainPalette.setColor(QPalette::Background, QColor(color));
+    widget->setAutoFillBackground(true);
+    widget->setPalette(mainPalette);
 }

@@ -1,10 +1,10 @@
-#include "buttons.h"
+#include "labels.h"
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QEvent>
 #include <QDebug>
 
-ProductButtons::ProductButtons(int id, QWidget *parent) :
+StdComboLabels::StdComboLabels(int id, QWidget *parent) :
     QWidget(parent), itemId(id)
 {
     // label style 设置
@@ -33,13 +33,13 @@ ProductButtons::ProductButtons(int id, QWidget *parent) :
     this->setAutoFillBackground(true);
 }
 
-ProductButtons::~ProductButtons()
+StdComboLabels::~StdComboLabels()
 {
 
 }
 
 // 对编辑label和删除label的鼠标点击事件进行过滤
-bool ProductButtons::eventFilter(QObject *obj, QEvent *ev)
+bool StdComboLabels::eventFilter(QObject *obj, QEvent *ev)
 {
     if (obj == viewLabel) {
         if (ev->type() == QEvent::MouseButtonPress) {

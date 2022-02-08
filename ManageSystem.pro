@@ -17,27 +17,33 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     ../config.cpp \
-    buttons.cpp \
+    datawidget.cpp \
     devicewidget.cpp \
+    editdevicewidget.cpp \
+    editfuncwidget.cpp \
     editproductwidget.cpp \
     homewidget.cpp \
+    labels.cpp \
     main.cpp \
     entrywidget.cpp \
     productwidget.cpp \
-    updatefuncwidget.cpp \
     util.cpp \
+    viewdevicewidget.cpp \
     viewproductwidget.cpp
 
 HEADERS += \
     ../config.h \
-    buttons.h \
+    datawidget.h \
     devicewidget.h \
+    editdevicewidget.h \
+    editfuncwidget.h \
     editproductwidget.h \
     entrywidget.h \
     homewidget.h \
+    labels.h \
     productwidget.h \
-    updatefuncwidget.h \
     util.h \
+    viewdevicewidget.h \
     viewproductwidget.h
 
 FORMS += \

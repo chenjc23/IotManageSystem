@@ -1,8 +1,8 @@
 #include "viewproductwidget.h"
 #include "editproductwidget.h"
 #include "util.h"
-#include "buttons.h"
-#include "updatefuncwidget.h"
+#include "labels.h"
+#include "editfuncwidget.h"
 #include <QtWidgets>
 #include <QtSql>
 
@@ -83,7 +83,7 @@ QWidget *ViewProductWidget::generateTableWidget()
     // info表
     QGridLayout * infoLayout = new QGridLayout;
     infoLayout->addWidget(new QLabel("产品名称:"), 0, 0, 2, 1);
-    infoLayout->addWidget(nameLabel = new QLabel, 0, 1, 2, 2, Qt::AlignLeft);
+    infoLayout->addWidget(nameLabel = new QLabel, 0, 1, 2, 2);
     infoLayout->addWidget(new QLabel("节点类型:"), 0, 2, 2, 1);
     infoLayout->addWidget(nodeLabel = new QLabel, 0, 3, 2, 2);
     infoLayout->addWidget(new QLabel("创建时间:"), 0, 4, 2, 1);
@@ -102,7 +102,7 @@ QWidget *ViewProductWidget::generateTableWidget()
     // 布局
     QVBoxLayout * mainLayout = new QVBoxLayout;
     mainLayout->addLayout(headLayout);
-    mainLayout->addSpacing(10);
+    mainLayout->addSpacing(20);
     mainLayout->addLayout(infoLayout);
     mainLayout->addStretch();
     tableWidget->setLayout(mainLayout);
@@ -192,9 +192,9 @@ AttrWidget::~AttrWidget()
 
 void AttrWidget::showFuncWidget(int id)
 {
-    UpdateFuncWidget * funcWidget = new UpdateFuncWidget(productID, id);
+    EditFuncWidget * funcWidget = new EditFuncWidget(productID, id);
     funcWidget->show();
-    connect(funcWidget, &UpdateFuncWidget::updateFinished, [=]{
+    connect(funcWidget, &EditFuncWidget::editFinished, [=]{
         this->refresh();
     });
 }

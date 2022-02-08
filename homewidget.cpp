@@ -8,12 +8,16 @@ HomeWidget::HomeWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::HomeWidget)
 {
-    // 检查数据库中product表是否存在，不存在则新建product表
+    // product表初始化
     QSqlError err = dbconn::dbProductInit();
     if (err.type() != QSqlError::NoError) {
         QMessageBox::critical(this, "Unable to create product table", err.text());
     }
-
+    // device表初始化
+    err = dbconn::dbDeviceInit();
+    if (err.type() != QSqlError::NoError) {
+        QMessageBox::critical(this, "Unable to create device table", err.text());
+    }
 
     ui->setupUi(this);
     this->setFixedSize(1300,750);
@@ -55,6 +59,7 @@ void HomeWidget::showProductWidget()
 
 void HomeWidget::showDeviceWidget()
 {
+    deviceWidget->refresh();
     ui->stackedWidget->setCurrentWidget(deviceWidget);
 }
 
