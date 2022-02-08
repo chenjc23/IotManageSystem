@@ -58,6 +58,7 @@ void DataWidget::refresh()
                               (attrNum-3)/maxcolumn, (attrNum-3)%maxcolumn);
     }
 
+    // 主窗口布局
     QHBoxLayout * hLayout = new QHBoxLayout;
     hLayout->addLayout(mainLayout);
     hLayout->addStretch();

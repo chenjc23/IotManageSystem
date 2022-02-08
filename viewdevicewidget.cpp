@@ -1,5 +1,6 @@
 #include "viewdevicewidget.h"
 #include "util.h"
+#include "datawidget.h"
 #include <QtWidgets>
 #include <QSqlQueryModel>
 #include <QDataWidgetMapper>
@@ -29,6 +30,7 @@ ViewDeviceWidget::ViewDeviceWidget(int deviceID, QWidget *parent) :
     // 栈窗口
     stackWidget = new QStackedWidget;
     stackWidget->insertWidget(infoPage, generateTableWidget());
+    stackWidget->insertWidget(dataPage, new DataWidget(deviceID));
     stackWidget->setCurrentIndex(infoPage);
 
     this->setMapper();
@@ -50,10 +52,10 @@ ViewDeviceWidget::ViewDeviceWidget(int deviceID, QWidget *parent) :
         stackWidget->setCurrentIndex(infoPage);
     });
 
-//    connect(funcBt, &QPushButton::clicked, this, [=]{
-//        static_cast<AttrWidget *>(stackWidget->widget(funcPage))->refresh();
-//        stackWidget->setCurrentIndex(funcPage);
-//    });
+    connect(dataBt, &QPushButton::clicked, this, [=]{
+        static_cast<DataWidget *>(stackWidget->widget(dataPage))->refresh();
+        stackWidget->setCurrentIndex(dataPage);
+    });
 
 
 }
