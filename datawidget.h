@@ -4,23 +4,29 @@
 #include <QtWidgets>
 #include "util.h"
 #include <QSqlQueryModel>
+#include <QDataWidgetMapper>
+#include <QTimer>
 
 class DataWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit DataWidget(int deviceID, QWidget *parent = nullptr);
-
     void getProductID();
 
+public slots:
     void refresh();
+
 private:
     int deviceID;
     int productID;
-
     int maxcolumn = 5;
 
     QSqlQueryModel * sqlModel;
+    QDataWidgetMapper * mapper;
+
+    QTimer * timer;
+
 
 signals:
 
@@ -33,10 +39,14 @@ class DataBox : public QWidget
 public:
     explicit DataBox(const QString &text, const QString &data,
                      const QString &unit, QWidget *parent = nullptr);
-//    Q_PROPERTY(QString data READ data WRITE setData);
+    Q_PROPERTY(QString data READ data WRITE setData);
 
-//    QString data();
-//    void setData(const QString &text);
+    QString data();
+    void setData(const QString &text);
+
+private:
+    QLabel * dataLabel;
+
 };
 
 #endif // DATAWIDGET_H

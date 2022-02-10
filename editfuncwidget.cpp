@@ -115,14 +115,6 @@ void EditFuncWidget::onConfirmBtClicked()
     if (query.exec() && !attrID) {
         query.exec(tr("alter table product_%1_attr "
         "add %2 %3").arg(productID).arg(identifierEdit->text()).arg(dataFormatComboBox->currentText()));
-//        query.exec("select last_insert_id()");
-//        query.first();
-//        QString newID = query.value(0).toString();
-//        query.prepare("update product "
-//                      "set func_ids=concat(func_ids, ?) where id=?");
-//        query.addBindValue(newID+",");
-//        query.addBindValue(productID);
-//        query.exec();
     }
     emit editFinished();
     this->close();

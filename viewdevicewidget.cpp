@@ -29,8 +29,8 @@ ViewDeviceWidget::ViewDeviceWidget(int deviceID, QWidget *parent) :
 
     // 栈窗口
     stackWidget = new QStackedWidget;
-    stackWidget->insertWidget(infoPage, generateTableWidget());
-    stackWidget->insertWidget(dataPage, new DataWidget(deviceID));
+    stackWidget->insertWidget(infoPage, infoWidget = generateTableWidget());
+    //stackWidget->insertWidget(dataPage, dataWidget = new DataWidget(deviceID));
     stackWidget->setCurrentIndex(infoPage);
 
     this->setMapper();
@@ -53,7 +53,11 @@ ViewDeviceWidget::ViewDeviceWidget(int deviceID, QWidget *parent) :
     });
 
     connect(dataBt, &QPushButton::clicked, this, [=]{
-        static_cast<DataWidget *>(stackWidget->widget(dataPage))->refresh();
+        if (stackWidget->widget(dataPage)) {
+            stackWidget->removeWidget(dataWidget);
+            delete dataWidget;
+        }
+        stackWidget->insertWidget(dataPage, dataWidget = new DataWidget(deviceID));
         stackWidget->setCurrentIndex(dataPage);
     });
 

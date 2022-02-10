@@ -47,10 +47,26 @@ class BlueBt : public QPushButton
 public:
     explicit BlueBt(const QString &text, QWidget *parent = nullptr);
     ~BlueBt();
-
 };
 
+class ImgSwitchBt : public QPushButton
+{
+    Q_OBJECT
+public:
+    explicit ImgSwitchBt(const QString &img1, const QString &img2 = "",
+                         int w = 40, int h = 20, QWidget *parent = nullptr);
+    ~ImgSwitchBt();
 
+signals:
+    void stateSwitched(bool state);
+
+private:
+    int width;
+    int height;
+    QString normalImgPath;
+    QString pressedImgPath;
+    bool currentState = false;
+};
 
 
 #endif // UTIL_H

@@ -29,6 +29,9 @@ private:
     QSqlQueryModel * sqlModel;
     QDataWidgetMapper * mapper;
 
+    QWidget * infoWidget;
+    QWidget * dataWidget;
+
 private:
     void refresh();
     void setMapper();

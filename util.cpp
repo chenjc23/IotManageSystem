@@ -179,3 +179,34 @@ void util::setBgColor(QWidget *widget, const QString &color)
     widget->setAutoFillBackground(true);
     widget->setPalette(mainPalette);
 }
+
+
+ImgSwitchBt::ImgSwitchBt(const QString &img1, const QString &img2, int w, int h, QWidget *parent) :
+    QPushButton(parent),
+    width(w),
+    height(h),
+    normalImgPath(img1),
+    pressedImgPath(img2)
+{
+    QPixmap pix;
+    pix.load(normalImgPath);
+    this->setIcon(pix);
+    this->setIconSize(QSize(width, height));
+    this->setFixedSize(width, height);
+    this->setStyleSheet("border: 0px;");
+
+    if (pressedImgPath.isEmpty()) return;
+    connect(this, &QPushButton::clicked, [=]{
+        currentState = !currentState;
+        if (currentState)
+            this->setIcon(QPixmap(pressedImgPath));
+        else
+            this->setIcon(QPixmap(normalImgPath));
+        emit this->stateSwitched(currentState);
+    });
+}
+
+ImgSwitchBt::~ImgSwitchBt()
+{
+
+}
