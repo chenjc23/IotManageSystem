@@ -1,6 +1,6 @@
 QT       += core gui sql
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets charts
 
 CONFIG += c++11
 
@@ -17,7 +17,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     ../config.cpp \
+    analysewidget.cpp \
     datawidget.cpp \
+    devicedatachartview.cpp \
     devicewidget.cpp \
     editdevicewidget.cpp \
     editfuncwidget.cpp \
@@ -33,7 +35,9 @@ SOURCES += \
 
 HEADERS += \
     ../config.h \
+    analysewidget.h \
     datawidget.h \
+    devicedatachartview.h \
     devicewidget.h \
     editdevicewidget.h \
     editfuncwidget.h \

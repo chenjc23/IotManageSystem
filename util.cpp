@@ -62,9 +62,7 @@ QSqlError dbconn::dbProductInit()
                                      "connect_method varchar(30), "
                                      "data_format varchar(30), "
                                      "description varchar(200), "
-                                     "create_time datetime default now(), "
-                                     "func_ids varchar(100) default '', "
-                                     "device_ids varchar(100) default '')";
+                                     "create_time datetime default now())";
         if (!query.exec(productCreationSql))
             return query.lastError();
     }

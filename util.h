@@ -28,6 +28,10 @@ int getCancelMsgBox();
 
 namespace util {
 
+enum TimeSlot {Hour=1, Day=24, Week=24*7, Month=24*30};
+
+enum ChartType {Area, Line, Spline, Scatter};
+
 void setCenterShow(QWidget * widget);
 
 void setBgColor(QWidget * widget, const QString &color = "#99CCCC");

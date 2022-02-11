@@ -84,15 +84,15 @@ void EditDeviceWidget::onConfirmBtClicked()
         query.addBindValue(nameEdit->text());
         query.addBindValue(remarkEdit->text());
         query.exec();
-        // 更新product表
-        query.exec("select last_insert_id()");
-        query.first();
-        QString newID = query.value(0).toString();
-        query.prepare("update product "
-                      "set device_ids=concat(device_ids, ?) where id=?");
-        query.addBindValue(newID+",");
-        query.addBindValue(productID);
-        query.exec();
+//        // 更新product表
+//        query.exec("select last_insert_id()");
+//        query.first();
+//        QString newID = query.value(0).toString();
+//        query.prepare("update product "
+//                      "set device_ids=concat(device_ids, ?) where id=?");
+//        query.addBindValue(newID+",");
+//        query.addBindValue(productID);
+//        query.exec();
     } else {
         updateSql = "update device set name=?,"
                     "remark=? where id=?";

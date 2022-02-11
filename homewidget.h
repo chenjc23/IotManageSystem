@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "productwidget.h"
 #include "devicewidget.h"
+#include "analysewidget.h"
 
 namespace Ui {
 class HomeWidget;
@@ -21,12 +22,14 @@ public slots:
     void switchVGroup();
     void showProductWidget();
     void showDeviceWidget();
+    void showAnalyseWidget();
 
 
 private:
     Ui::HomeWidget *ui;
     ProductWidget * productWidget;
     DeviceWidget * deviceWidget;
+    AnalyseWidget * analyseWidget;
 
 };
 
