@@ -24,7 +24,7 @@ private:
     util::ChartType chartType;
 
     QChart * chart;
-    QXYSeries * series;
+    QAbstractSeries * series;
 
     //QList<QPointF> dataList;
 
@@ -37,6 +37,8 @@ private:
     QChart *createLineChart();
     QChart *createSplineChart();
     QChart *createScatterChart();
+
+    void makeChart();
 
 
 signals:

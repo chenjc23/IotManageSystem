@@ -16,21 +16,8 @@ DeviceDataChartView::DeviceDataChartView(int deviceID, const QString &identifier
     chartType(chartType)
 {
     this->setProductID();
-    // 根据类型参数设置chart
-    switch (chartType) {
-    case util::Area :
-        chart = createAreaChart();
-        break;
-    case util::Line :
-        chart = createLineChart();
-        break;
-    case util::Spline :
-        chart = createSplineChart();
-        break;
-    case util::Scatter :
-        chart = createScatterChart();
-        break;
-    }
+    this->makeChart();
+
     this->setChart(chart);
     this->setRenderHint(QPainter::Antialiasing);
 }
@@ -52,7 +39,7 @@ void DeviceDataChartView::setXYSeries()
     QSqlQuery query;
     query.exec(sql);
     while (query.next()) {
-        series->append(query.value(0).toDateTime().toMSecsSinceEpoch(), query.value(1).toFloat());
+        static_cast<QXYSeries *>(series)->append(query.value(0).toDateTime().toMSecsSinceEpoch(), query.value(1).toFloat());
     }
 }
 
@@ -75,37 +62,31 @@ void DeviceDataChartView::setAxis()
         break;
     }
     axisY->setLabelFormat("%.2f");
-    chart->addAxis(axisX, Qt::AlignBottom);
-    chart->addAxis(axisY, Qt::AlignLeft);
-    series->attachAxis(axisX);
-    series->attachAxis(axisY);
+
+    chart->setAxisX(axisX, series);
+    chart->setAxisY(axisY, series);
 }
 
-QChart *DeviceDataChartView::createAreaChart()
+void DeviceDataChartView::makeChart()
 {
+    switch (chartType) {
+    case util::Spline :
+        series = new QSplineSeries;
+        break;
+    case util::Scatter :
+        series = new QScatterSeries;
+        break;
+    default :
+        series = new QLineSeries;
+        break;
+    }
     chart = new QChart;
-    return chart;
-}
-
-QChart *DeviceDataChartView::createLineChart()
-{
-    chart = new QChart;
-    series = new QLineSeries;
+    chart->setAnimationOptions(QChart::GridAxisAnimations);
     this->setXYSeries();
-    chart->addSeries(series);
     chart->legend()->hide();
+    if (chartType == util::Area)
+        chart->addSeries(series = new QAreaSeries(static_cast<QLineSeries *>(series)));
+    else
+        chart->addSeries(series);
     this->setAxis();
-    return chart;
-}
-
-QChart *DeviceDataChartView::createSplineChart()
-{
-    chart = new QChart;
-    return chart;
-}
-
-QChart *DeviceDataChartView::createScatterChart()
-{
-    chart = new QChart;
-    return chart;
 }
