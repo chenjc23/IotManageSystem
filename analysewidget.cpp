@@ -4,13 +4,14 @@
 #include <QSqlQuery>
 #include <QtWidgets>
 #include <QChartView>
+#include <QTableView>
 
 AnalyseWidget::AnalyseWidget(QWidget *parent) : QWidget(parent),
     deviceBox(createDeviceBox()),
+    attrBox(new QComboBox),
     timeBox(createTimeBox()),
     themeBox(createThemeBox()),
     chartTypeBox(createChartTypeBox()),
-    chartLayout(new QGridLayout),
     mainLayout(new QVBoxLayout),
     chartBt(new QPushButton("图表")),
     formBt(new QPushButton("表格"))
@@ -23,14 +24,15 @@ AnalyseWidget::AnalyseWidget(QWidget *parent) : QWidget(parent),
     navLayout->addWidget(new QLabel("Device:"));
     navLayout->addWidget(deviceBox);
     navLayout->addWidget(new QLabel("属性:"));
-
-    navLayout->addWidget(new QLabel("时间段:"));
+    navLayout->addWidget(attrBox);
+    navLayout->addWidget(timeLabel = new QLabel("时间段:"));
     navLayout->addWidget(timeBox);
     navLayout->addWidget(new QLabel("Theme:"));
     navLayout->addWidget(themeBox);
     navLayout->addStretch();
 
     QHBoxLayout * subLayout = new QHBoxLayout;
+    subLayout->setSpacing(0);
     subLayout->addWidget(chartTypeLabel = new QLabel("ChartType:"));
     subLayout->addWidget(chartTypeBox);
     subLayout->addStretch();
@@ -43,6 +45,12 @@ AnalyseWidget::AnalyseWidget(QWidget *parent) : QWidget(parent),
     mainLayout->addLayout(navLayout);
     mainLayout->addSpacing(15);
     mainLayout->addLayout(subLayout);
+
+    // 栈窗口显示图表或表格
+    stackWidget = new QStackedWidget;
+    mainLayout->addWidget(stackWidget);
+    mainLayout->setStretchFactor(stackWidget, 30);
+
 
     this->setAttrBox();
     this->updateChartView();
@@ -60,21 +68,16 @@ void AnalyseWidget::setAttrBox()
     // 查看产品属性
     query.exec(tr("select identifier from attr where product_id=%1").arg(query.value(0).toInt()));
 
-    if (navLayout->indexOf(attrBox) < 0) {
-        attrBox = new QComboBox;
-        navLayout->insertWidget(3, attrBox);
-    } else {
-        QComboBox * tempBox = new QComboBox;
-        navLayout->replaceWidget(attrBox, tempBox);
-        delete attrBox;
-        attrBox = tempBox;
-    }
+    QComboBox * tempBox = new QComboBox;
+    navLayout->replaceWidget(attrBox, tempBox);
+    delete attrBox;
+    attrBox = tempBox;
 
     while (query.next()) {
         attrBox->addItem(query.value(0).toString());
     }
     connect(attrBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, &AnalyseWidget::updateChartView);
+            this, &AnalyseWidget::unifiedUpdate);
 }
 
 void AnalyseWidget::updateTheme()
@@ -162,7 +165,7 @@ void AnalyseWidget::connectSignals()
     connect(deviceBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, [=]{
         this->setAttrBox();
-        this->updateChartView();
+        this->unifiedUpdate();
     });
 
     connect(timeBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
@@ -176,86 +179,122 @@ void AnalyseWidget::connectSignals()
 
     connect(chartBt, &QPushButton::clicked, [=]{
         if (chartTypeLabel->isVisible()) return;
-        chartTypeLabel->setVisible(true);
-        chartTypeBox->setVisible(true);
+        this->setPartVisible(true);
         this->updateChartView();
     });
 
     connect(formBt, &QPushButton::clicked, [=]{
         if (!chartTypeLabel->isVisible()) return;
-        chartTypeLabel->setVisible(false);
-        chartTypeBox->setVisible(false);
+        this->setPartVisible(false);
         this->updateFormView();
     });
 
 }
 
-void AnalyseWidget::deleteChartLayout()
+void AnalyseWidget::unifiedUpdate()
 {
-    // 清空图像列表
-    chartViews.clear();
-    // 清空原图像布局
-    QLayoutItem * child;
-    while ((child = chartLayout->takeAt(0))) {
-        chartLayout->removeWidget(child->widget());
-        // child->widget()->setParent(nullptr);
-        delete child->widget();
-        delete child;
-    }
-    delete chartLayout;
+    if (stackWidget->currentWidget() == chartWidget)
+        this->updateChartView();
+    else
+        this->updateFormView();
 }
 
 void AnalyseWidget::updateChartView()
 {
-    this->deleteChartLayout();
-    // 创建新布局
-    chartLayout = new QGridLayout;
-    chartLayout->setSpacing(10);
-    // 若属性为空，直接返回空窗口
+    // 清空图表列
+    chartViews.clear();
 
-    QString identifier = attrBox->currentText();
-    if (identifier.isEmpty()) {
-        chartLayout->addWidget(new QChartView);
-        mainLayout->addLayout(chartLayout);
-        mainLayout->setStretchFactor(chartLayout, 30);
-        return;
-    }
+    // 创建新布局
+    QGridLayout * chartLayout = new QGridLayout;
+    chartLayout->setSpacing(10);
 
     // 若属性非空
-    int deviceID = deviceBox->currentData().toInt();
+    QString identifier = attrBox->currentText();
+    if (!identifier.isEmpty()) {
+        int deviceID = deviceBox->currentData().toInt();
+        util::TimeSlot timeSlot = static_cast<util::TimeSlot>(timeBox->currentData().toInt());
+        DeviceDataChartView * view;
 
-    util::TimeSlot timeSlot = static_cast<util::TimeSlot>(timeBox->currentData().toInt());
+        if (chartTypeBox->currentText() == "All") {
 
-    DeviceDataChartView * view;
-    if (chartTypeBox->currentText() == "All") {
-
-        chartLayout->addWidget(view = new DeviceDataChartView(
-                                   deviceID, identifier, timeSlot, util::Area), 0, 0);
-        chartViews.append(view);
-        chartLayout->addWidget(view = new DeviceDataChartView(
-                                   deviceID, identifier, timeSlot, util::Line), 0, 1);
-        chartViews.append(view);
-        chartLayout->addWidget(view = new DeviceDataChartView(
-                                   deviceID, identifier, timeSlot, util::Spline), 1, 0);
-        chartViews.append(view);
-        chartLayout->addWidget(view = new DeviceDataChartView(
-                                   deviceID, identifier, timeSlot, util::Scatter), 1, 1);
-        chartViews.append(view);
-    } else {
-        util::ChartType chartType = static_cast<util::ChartType>(chartTypeBox->currentData().toInt());
-        chartLayout->addWidget(view = new DeviceDataChartView(
-                                   deviceID, identifier, timeSlot, chartType));
-        chartViews.append(view);
+            chartLayout->addWidget(view = new DeviceDataChartView(
+                                       deviceID, identifier, timeSlot, util::Area), 0, 0);
+            chartViews.append(view);
+            chartLayout->addWidget(view = new DeviceDataChartView(
+                                       deviceID, identifier, timeSlot, util::Line), 0, 1);
+            chartViews.append(view);
+            chartLayout->addWidget(view = new DeviceDataChartView(
+                                       deviceID, identifier, timeSlot, util::Spline), 1, 0);
+            chartViews.append(view);
+            chartLayout->addWidget(view = new DeviceDataChartView(
+                                       deviceID, identifier, timeSlot, util::Scatter), 1, 1);
+            chartViews.append(view);
+        } else {
+            util::ChartType chartType = static_cast<util::ChartType>(chartTypeBox->currentData().toInt());
+            chartLayout->addWidget(view = new DeviceDataChartView(
+                                       deviceID, identifier, timeSlot, chartType));
+            chartViews.append(view);
+        }
     }
-    mainLayout->addLayout(chartLayout);
-    mainLayout->setStretchFactor(chartLayout, 30);
 
     this->updateTheme();
+
+    QWidget * newWidget = new QWidget;
+    newWidget->setLayout(chartLayout);
+    stackWidget->addWidget(newWidget);
+    stackWidget->setCurrentWidget(newWidget);
+    if (stackWidget->indexOf(chartWidget) > 0) {
+        stackWidget->removeWidget(chartWidget);
+        delete chartWidget;
+    }
+    chartWidget = newWidget;
 }
 
 void AnalyseWidget::updateFormView()
 {
-//    this->deleteChartLayout();
-//    chartLayout = new
+    if (stackWidget->indexOf(formWidget) < 0) {
+        sqlModel = new CenterAlignSqlModel;
+        formView = new QTableView;
+        formView->setModel(sqlModel);
+        // 设置视图样式
+        //formView->verticalHeader()->hide();
+        //formView->setShowGrid(false);
+        formView->setStyleSheet("QTableView {font: 16px;} "
+                    "QTableView::item:hover{background-color: #6699CC; color: white}");
+        formWidget = formView;
+        stackWidget->addWidget(formWidget);
+    }
+    this->formRefresh();
+    stackWidget->setCurrentWidget(formWidget);
+}
+
+void AnalyseWidget::formRefresh()
+{
+    // 若属性为空
+    QString identifier = attrBox->currentText();
+    if (identifier.isEmpty()) {
+        sqlModel->clear();
+        return;
+    }
+    // 若属性非空
+    int deviceID = deviceBox->currentData().toInt();
+    QString sql = tr("select %1, time from product_%2_attr "
+                     "where %1 and device_id=%3 "
+                     "order by time desc").arg(identifier).arg(
+                util::getProductID(deviceID)).arg(deviceID);
+    sqlModel->setQuery(sql);
+    sqlModel->setHeaderData(0, Qt::Horizontal, attrBox->currentText());
+    sqlModel->setHeaderData(1, Qt::Horizontal, "时间");
+    formView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    formView->horizontalHeader()->resizeSection(0, 150);
+    formView->horizontalHeader()->resizeSection(1, 200);
+}
+
+void AnalyseWidget::setPartVisible(bool sign)
+{
+    chartTypeLabel->setVisible(sign);
+    chartTypeBox->setVisible(sign);
+    timeLabel->setVisible(sign);
+    timeBox->setVisible(sign);
 }
 

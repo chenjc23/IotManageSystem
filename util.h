@@ -36,6 +36,7 @@ void setCenterShow(QWidget * widget);
 
 void setBgColor(QWidget * widget, const QString &color = "#99CCCC");
 
+int getProductID(int device_id);
 }
 
 class CenterAlignSqlModel : public QSqlQueryModel

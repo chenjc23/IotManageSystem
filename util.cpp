@@ -208,3 +208,11 @@ ImgSwitchBt::~ImgSwitchBt()
 {
 
 }
+
+int util::getProductID(int deviceID)
+{
+    QSqlQuery query;
+    query.exec(QString("select product_id from device where id=%1").arg(deviceID));
+    query.first();
+    return query.value(0).toInt();
+}

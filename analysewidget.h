@@ -3,6 +3,7 @@
 
 #include <QtWidgets>
 #include "devicedatachartview.h"
+#include "util.h"
 
 class AnalyseWidget : public QWidget
 {
@@ -15,6 +16,7 @@ public slots:
     void updateTheme();
     void updateChartView();
     void updateFormView();
+    void unifiedUpdate();
 
 private:
     QComboBox * deviceBox;
@@ -24,13 +26,20 @@ private:
     QComboBox * chartTypeBox;
 
     QHBoxLayout * navLayout;
-    QGridLayout * chartLayout;
     QVBoxLayout * mainLayout;
     QList<QChartView *> chartViews;
 
     QLabel * chartTypeLabel;
+    QLabel * timeLabel;
     QPushButton * chartBt;
     QPushButton * formBt;
+
+    QStackedWidget * stackWidget;
+    QWidget * chartWidget;
+    QWidget * formWidget;
+
+    CenterAlignSqlModel * sqlModel;
+    QTableView * formView;
 
     QComboBox * createDeviceBox();
     QComboBox * createAttrBox();
@@ -40,6 +49,8 @@ private:
 
     void connectSignals();
     void deleteChartLayout();
+    void formRefresh();
+    void setPartVisible(bool sign);
 
 
 signals:
