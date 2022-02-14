@@ -1,6 +1,8 @@
 #include "datawidget.h"
 #include "labels.h"
 #include "util.h"
+#include "devicedatachartview.h"
+#include "devicedataformview.h"
 #include <QSqlQueryModel>
 #include <QSqlQuery>
 #include <QtWidgets>
@@ -48,6 +50,12 @@ DataWidget::DataWidget(int deviceID, QWidget *parent) :
                               data, query.value(1).toString()),
                               (attrNum-2)/maxcolumn, (attrNum-2)%maxcolumn);
         mapper->addMapping(dataBox, attrNum, "data");
+        connect(dataBox, &DataBox::labelClicked, [=] {
+            QWidget * tempWidget = this->getShowWidget(deviceID, topRecord.fieldName(attrNum));
+            tempWidget->setAttribute(Qt::WA_DeleteOnClose);
+            tempWidget->setWindowModality(Qt::ApplicationModal);
+            tempWidget->show();
+        });
     }
 
     // 主窗口布局
@@ -86,6 +94,63 @@ DataWidget::DataWidget(int deviceID, QWidget *parent) :
     });
 }
 
+QWidget *DataWidget::getShowWidget(int deviceID, const QString &identifier)
+{
+    QWidget * showWidget = new QWidget;
+    // 创建时间拉选框
+    QComboBox * timeBox = new QComboBox;
+    timeBox->addItem("1小时", util::Hour);
+    timeBox->addItem("24小时", util::Day);
+    timeBox->addItem("7天", util::Week);
+    timeBox->addItem("30天", util::Month);
+    QPushButton * chartBt = new QPushButton("图表");
+    QPushButton * formBt = new QPushButton("表格");
+
+    QHBoxLayout * headLayout = new QHBoxLayout;
+    headLayout->setSpacing(0);
+    headLayout->addWidget(timeBox);
+    headLayout->addStretch();
+    headLayout->addWidget(chartBt);
+    headLayout->addWidget(formBt);
+
+    QStackedWidget * stackWidget = new QStackedWidget;
+    DeviceDataChartView * chartView = new DeviceDataChartView(deviceID,
+                   identifier, static_cast<util::TimeSlot>(timeBox->currentData().toInt()), util::Line);
+    DeviceDataFormView * formView = new DeviceDataFormView(deviceID, identifier);
+    stackWidget->addWidget(chartView);
+    stackWidget->addWidget(formView);
+    stackWidget->setCurrentWidget(chartView);
+
+    QVBoxLayout * mainLayout = new  QVBoxLayout;
+    mainLayout->addLayout(headLayout);
+    mainLayout->addWidget(stackWidget);
+    mainLayout->setStretchFactor(stackWidget, 20);
+
+    showWidget->setLayout(mainLayout);
+
+    connect(timeBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=,&chartView](){
+        DeviceDataChartView * tempView = new DeviceDataChartView(deviceID,
+                       identifier, static_cast<util::TimeSlot>(timeBox->currentData().toInt()), util::Line);
+        stackWidget->addWidget(tempView);
+        stackWidget->setCurrentWidget(tempView);
+        stackWidget->removeWidget(chartView);
+        delete chartView;
+        chartView = tempView;
+    });
+
+    connect(chartBt, &QPushButton::clicked, [=]{
+        timeBox->setVisible(true);
+        stackWidget->setCurrentWidget(chartView);
+    });
+
+    connect(formBt, &QPushButton::clicked, [=]{
+        timeBox->setVisible(false);
+        stackWidget->setCurrentWidget(formView);
+    });
+
+    return showWidget;
+}
+
 void DataWidget::refresh()
 {
     QString sql = tr("select * from device_%1_attr "
@@ -120,6 +185,8 @@ DataBox::DataBox(const QString &text, const QString &data, const QString &unit, 
     util::setBgColor(this, "#99CCCC");
     this->setFixedSize(200, 130);
     this->setLayout(mainLayout);
+
+    connect(viewDataLabel, SIGNAL(funcLabelClicked()), this, SIGNAL(labelClicked()));
 }
 
 QString DataBox::data()

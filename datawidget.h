@@ -12,6 +12,7 @@ class DataWidget : public QWidget
     Q_OBJECT
 public:
     explicit DataWidget(int deviceID, QWidget *parent = nullptr);
+    QWidget * getShowWidget(int deviceID, const QString &identifier);
 
 public slots:
     void refresh();
@@ -45,6 +46,8 @@ public:
 private:
     QLabel * dataLabel;
 
+signals:
+    void labelClicked();
 };
 
 #endif // DATAWIDGET_H
