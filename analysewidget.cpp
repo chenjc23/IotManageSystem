@@ -1,6 +1,7 @@
 #include "analysewidget.h"
 #include "util.h"
 #include "devicedatachartview.h"
+#include "devicedataformview.h"
 #include <QSqlQuery>
 #include <QtWidgets>
 #include <QChartView>
@@ -54,25 +55,25 @@ AnalyseWidget::AnalyseWidget(QWidget *parent) : QWidget(parent),
 
     this->setAttrBox();
     this->updateChartView();
+    stackWidget->addWidget(formWidget = new DeviceDataFormView);
     this->setLayout(mainLayout);
     this->connectSignals();
 }
 
 void AnalyseWidget::setAttrBox()
 {
-    if (!deviceBox->currentData().isValid()) return;
-    //attrBox->clear();
+    QComboBox * tempBox = new QComboBox;
+    navLayout->replaceWidget(attrBox, tempBox);
+    delete attrBox;
+    attrBox = tempBox;
+    // 若无设备则替换空组合框后退出
+    if (deviceBox->currentIndex()<0) return;
+
     QSqlQuery query;
     // 先获取设备对应产品id
     int productID = util::getProductID(deviceBox->currentData().toInt());
     // 查看产品属性
     query.exec(tr("select identifier from attr where product_id=%1").arg(productID));
-
-    QComboBox * tempBox = new QComboBox;
-    navLayout->replaceWidget(attrBox, tempBox);
-    delete attrBox;
-    attrBox = tempBox;
-
     while (query.next()) {
         attrBox->addItem(query.value(0).toString());
     }
@@ -261,40 +262,13 @@ void AnalyseWidget::updateChartView()
 
 void AnalyseWidget::updateFormView()
 {
-    if (stackWidget->indexOf(formWidget) < 0) {
-        sqlModel = new CenterAlignSqlModel;
-        formView = new QTableView;
-        formView->setModel(sqlModel);
-        // 设置视图样式
-        //formView->verticalHeader()->hide();
-        //formView->setShowGrid(false);
-        formView->setStyleSheet("QTableView {font: 16px;} "
-                    "QTableView::item:hover{background-color: #6699CC; color: white}");
-        formWidget = formView;
-        stackWidget->addWidget(formWidget);
+    if (deviceBox->currentIndex()<0 or attrBox->currentIndex()<0) {
+        static_cast<DeviceDataFormView *>(formWidget)->clearModel();
+    } else {
+        static_cast<DeviceDataFormView *>(formWidget)->refresh(
+                    deviceBox->currentData().toInt(), attrBox->currentText());
     }
-    this->formRefresh();
     stackWidget->setCurrentWidget(formWidget);
-}
-
-void AnalyseWidget::formRefresh()
-{
-    // 若属性为空
-    QString identifier = attrBox->currentText();
-    if (identifier.isEmpty()) {
-        sqlModel->clear();
-        return;
-    }
-    // 若属性非空
-    int deviceID = deviceBox->currentData().toInt();
-    QString sql = tr("select %1, time from device_%2_attr "
-                     "where %1 order by time desc").arg(identifier).arg(deviceID);
-    sqlModel->setQuery(sql);
-    sqlModel->setHeaderData(0, Qt::Horizontal, attrBox->currentText());
-    sqlModel->setHeaderData(1, Qt::Horizontal, "时间");
-    formView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-    formView->horizontalHeader()->resizeSection(0, 150);
-    formView->horizontalHeader()->resizeSection(1, 200);
 }
 
 void AnalyseWidget::setPartVisible(bool sign)

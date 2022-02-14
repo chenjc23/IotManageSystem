@@ -39,9 +39,6 @@ private:
     QWidget * chartWidget;
     QWidget * formWidget;
 
-    CenterAlignSqlModel * sqlModel;
-    QTableView * formView;
-
     QComboBox * createDeviceBox();
     QComboBox * createAttrBox();
     QComboBox * createTimeBox();
@@ -50,7 +47,6 @@ private:
 
     void connectSignals();
     void deleteChartLayout();
-    void formRefresh();
     void setPartVisible(bool sign);
 
 

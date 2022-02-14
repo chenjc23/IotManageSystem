@@ -20,6 +20,7 @@ SOURCES += \
     analysewidget.cpp \
     datawidget.cpp \
     devicedatachartview.cpp \
+    devicedataformview.cpp \
     devicewidget.cpp \
     editdevicewidget.cpp \
     editfuncwidget.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
     analysewidget.h \
     datawidget.h \
     devicedatachartview.h \
+    devicedataformview.h \
     devicewidget.h \
     editdevicewidget.h \
     editfuncwidget.h \
