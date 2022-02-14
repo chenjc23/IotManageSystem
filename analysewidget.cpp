@@ -60,13 +60,13 @@ AnalyseWidget::AnalyseWidget(QWidget *parent) : QWidget(parent),
 
 void AnalyseWidget::setAttrBox()
 {
+    if (!deviceBox->currentData().isValid()) return;
     //attrBox->clear();
     QSqlQuery query;
     // 先获取设备对应产品id
-    query.exec(tr("select product_id from device where id=%1").arg(deviceBox->currentData().toInt()));
-    query.first();
+    int productID = util::getProductID(deviceBox->currentData().toInt());
     // 查看产品属性
-    query.exec(tr("select identifier from attr where product_id=%1").arg(query.value(0).toInt()));
+    query.exec(tr("select identifier from attr where product_id=%1").arg(productID));
 
     QComboBox * tempBox = new QComboBox;
     navLayout->replaceWidget(attrBox, tempBox);
@@ -123,6 +123,11 @@ QComboBox * AnalyseWidget::createDeviceBox()
     while (query.next()) {
         deviceBox->addItem(query.value(0).toString(), query.value(1).toInt());
     }
+    connect(deviceBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            this, [=]{
+        this->setAttrBox();
+        this->unifiedUpdate();
+    });
     return deviceBox;
 }
 
@@ -162,12 +167,6 @@ QComboBox *AnalyseWidget::createChartTypeBox()
 
 void AnalyseWidget::connectSignals()
 {
-    connect(deviceBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            this, [=]{
-        this->setAttrBox();
-        this->unifiedUpdate();
-    });
-
     connect(timeBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             this, &AnalyseWidget::updateChartView);
 
@@ -199,6 +198,16 @@ void AnalyseWidget::unifiedUpdate()
         this->updateFormView();
 }
 
+void AnalyseWidget::refresh()
+{
+    QComboBox * tempBox = this->createDeviceBox();
+    navLayout->replaceWidget(deviceBox, tempBox);
+    delete deviceBox;
+    deviceBox = tempBox;
+    this->setAttrBox();
+    this->unifiedUpdate();
+}
+
 void AnalyseWidget::updateChartView()
 {
     // 清空图表列
@@ -210,7 +219,7 @@ void AnalyseWidget::updateChartView()
 
     // 若属性非空
     QString identifier = attrBox->currentText();
-    if (!identifier.isEmpty()) {
+    if (!identifier.isEmpty() and deviceBox->currentData().isValid()) {
         int deviceID = deviceBox->currentData().toInt();
         util::TimeSlot timeSlot = static_cast<util::TimeSlot>(timeBox->currentData().toInt());
         DeviceDataChartView * view;
@@ -278,10 +287,8 @@ void AnalyseWidget::formRefresh()
     }
     // 若属性非空
     int deviceID = deviceBox->currentData().toInt();
-    QString sql = tr("select %1, time from product_%2_attr "
-                     "where %1 and device_id=%3 "
-                     "order by time desc").arg(identifier).arg(
-                util::getProductID(deviceID)).arg(deviceID);
+    QString sql = tr("select %1, time from device_%2_attr "
+                     "where %1 order by time desc").arg(identifier).arg(deviceID);
     sqlModel->setQuery(sql);
     sqlModel->setHeaderData(0, Qt::Horizontal, attrBox->currentText());
     sqlModel->setHeaderData(1, Qt::Horizontal, "时间");

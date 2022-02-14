@@ -8,15 +8,17 @@
 EditDeviceWidget::EditDeviceWidget(int deviceID, QWidget *parent) :
     QWidget(parent), deviceID(deviceID)
 {
-    QLabel * title = new QLabel("添加自定义功能");
+    QLabel * title = new QLabel("添加设备");
     title->setStyleSheet("font: bold 14pt ""宋体""; padding: 10px;");
 
     productComboBox = new QComboBox;
-    this->setProductComboBoxModel();
+    this->setProductComboBox();
     nameEdit = new QLineEdit;
     nameEdit->setPlaceholderText("请输入DeviceName");
     remarkEdit = new QLineEdit;
     remarkEdit->setPlaceholderText("请输入备注名称");
+    ipEdit = new QLineEdit;
+    ipEdit->setPlaceholderText("请输入设备IP地址");
     confirmBt = new BlueBt("确认");
     confirmBt->setFixedSize(50, 20);
     cancelBt = new QPushButton("取消");
@@ -42,11 +44,14 @@ EditDeviceWidget::EditDeviceWidget(int deviceID, QWidget *parent) :
     mainLayout->addSpacing(10);
     mainLayout->addWidget(new QLabel("备注名称"));
     mainLayout->addWidget(remarkEdit);
+    mainLayout->addSpacing(10);
+    mainLayout->addWidget(new QLabel("IP地址"));
+    mainLayout->addWidget(ipEdit);
     mainLayout->addStretch();
     mainLayout->addLayout(bottomLayout);
 
     // 主窗口的属性设置
-    this->setFixedSize(300, 300);
+    this->setFixedSize(300, 350);
     this->setAttribute(Qt::WA_DeleteOnClose);
     util::setCenterShow(this);
     this->setWindowFlags(windowFlags() |
@@ -69,36 +74,46 @@ void EditDeviceWidget::onConfirmBtClicked()
     QSqlQuery query;
     // 针对添加设备
     if (!deviceID) {
-//        query.exec(tr("select id from "
-//             "product where name=%1").arg(productComboBox->currentText()));
-        query.prepare("select id from product where name=?");
-        query.addBindValue(productComboBox->currentText());
-        query.exec();
-        query.first();
-        int productID = query.value(0).toInt();
+//        query.prepare("select id from product where name=?");
+//        query.addBindValue(productComboBox->currentText());
+//        query.exec();
+//        query.first();
+//        int productID = query.value(0).toInt();
+        int productID = productComboBox->currentData().toInt();
         updateSql = "insert into device (product_id,"
                     "name,"
-                    "remark) values (?,?,?)";
+                    "remark, ip) values (?,?,?,?)";
         query.prepare(updateSql);
         query.addBindValue(productID);
         query.addBindValue(nameEdit->text());
         query.addBindValue(remarkEdit->text());
+        query.addBindValue(ipEdit->text());
         query.exec();
-//        // 更新product表
-//        query.exec("select last_insert_id()");
-//        query.first();
-//        QString newID = query.value(0).toString();
-//        query.prepare("update product "
-//                      "set device_ids=concat(device_ids, ?) where id=?");
-//        query.addBindValue(newID+",");
-//        query.addBindValue(productID);
-//        query.exec();
+        // 若是添加页，创建新的设备属性表
+        query.exec("select last_insert_id()");
+        query.first();
+        QString lastDeviceID = query.value(0).toString();
+        // 寻找对应产品的属性字段
+        QString attrStr;
+        QSqlQuery funcQuery;
+        funcQuery.exec(tr("select identifier, data_type "
+                          "from attr where product_id=%1").arg(productID));
+        while (funcQuery.next()) {
+            attrStr += tr(",%1 %2").arg(funcQuery.value(0).toString()).arg(
+                        funcQuery.value(1).toString());
+        }
+        // 根据提取的属性字段创建设备属性表
+        query.exec(tr("create table %1 (id integer primary key auto_increment, "
+                      "time datetime default now() %2)").arg(
+                       "device_"+lastDeviceID+"_attr").arg(attrStr));
+
     } else {
         updateSql = "update device set name=?,"
-                    "remark=? where id=?";
+                    "remark=?, ip=? where id=?";
         query.prepare(updateSql);
         query.addBindValue(nameEdit->text());
         query.addBindValue(remarkEdit->text());
+        query.addBindValue(ipEdit->text());
         query.addBindValue(deviceID);
         query.exec();
     }
@@ -107,17 +122,15 @@ void EditDeviceWidget::onConfirmBtClicked()
     this->close();
 }
 
-void EditDeviceWidget::setProductComboBoxModel()
+void EditDeviceWidget::setProductComboBox()
 {
     QSqlQuery query;
-    query.exec("select name from product");
-
-    QStringList products;
+    query.exec("select name, id from product");
     while (query.next()) {
-        products << query.record().value(0).toString();
+        productComboBox->addItem(query.value(0).toString(), query.value(1).toInt());
     }
-    QStringListModel * model = new QStringListModel(products, this);
-    productComboBox->setModel(model);
+
+    // 若添加页，默认未选
     if (!deviceID)
         productComboBox->setCurrentIndex(-1);
 }
@@ -127,12 +140,13 @@ void EditDeviceWidget::setMapperWithModel()
     sqlModel = new QSqlQueryModel(this);
     mapper = new QDataWidgetMapper(this);
     mapper->setModel(sqlModel);
-    sqlModel->setQuery(tr("select b.name, a.name, a.remark "
-                  "from device a inner join product b "
-                  "on a.product_id = b.id where a.id=%1").arg(deviceID));
+    sqlModel->setQuery(tr("select b.name, a.name, a.remark, a.ip "
+                      "from device a inner join product b "
+                      "on a.product_id = b.id where a.id=%1").arg(deviceID));
     mapper->addMapping(productComboBox, 0, "currentText");
     mapper->addMapping(nameEdit, 1);
     mapper->addMapping(remarkEdit, 2);
+    mapper->addMapping(ipEdit, 3);
     mapper->toFirst();
     productComboBox->setDisabled(true);
 }

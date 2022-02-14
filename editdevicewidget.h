@@ -22,6 +22,7 @@ private:
     QComboBox * productComboBox;
     QLineEdit * nameEdit;
     QLineEdit * remarkEdit;
+    QLineEdit * ipEdit;
 
     BlueBt * confirmBt;
     QPushButton * cancelBt;
@@ -30,7 +31,7 @@ private:
     QDataWidgetMapper * mapper;
 
 private:
-    void setProductComboBoxModel();
+    void setProductComboBox();
     void setMapperWithModel();
 
 signals:

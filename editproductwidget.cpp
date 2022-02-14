@@ -165,17 +165,6 @@ void EditProductWidget::onConfirmBtClicked()
     if (productID)
         query.addBindValue(productID);
     query.exec();
-
-    // 若是添加页，创建新的属性表
-    if (!productID) {
-        query.exec("select last_insert_id()");
-        query.first();
-        QString newID = query.value(0).toString();
-        query.exec(tr("create table %1 (id integer primary key auto_increment, "
-                      "device_id integer, "
-                      "time datetime default now())").arg("product_"+newID+"_attr"));
-    }
-
     // 切换回产品页面
     emit switchSignal();
 }

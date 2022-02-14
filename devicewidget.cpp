@@ -149,6 +149,7 @@ void DeviceWidget::deleteDevice(int id)
     if (msg::getCancelMsgBox() == QMessageBox::Ok) {
         QSqlQuery query;
         query.exec(tr("delete from device where id=%1").arg(id));
+        query.exec(tr("drop table device_%1_attr").arg(id));
         this->refresh();
     }
 }

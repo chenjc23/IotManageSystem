@@ -127,7 +127,14 @@ void ProductWidget::deleteProduct(int itemId)
 {
     if (msg::getCancelMsgBox() == QMessageBox::Ok) {
         QSqlQuery query;
+        // 删除product表
         query.exec(tr("delete from product where id=%1").arg(itemId));
+        // 删除product下所有设备属性表
+        query.exec(tr("select id from device where product_id=%1").arg(itemId));
+        QSqlQuery dropQuery;
+        while (query.next()) {
+            dropQuery.exec(tr("drop table device_%1_attr").arg(query.value(0).toInt()));
+        }
         this->refresh();
     }
 }

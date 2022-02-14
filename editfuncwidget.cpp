@@ -111,10 +111,17 @@ void EditFuncWidget::onConfirmBtClicked()
     } else {
         query.addBindValue(productID);
     }
-    // 若是插入功能，更新product表
+    // 若是插入功能，更新设备属性表
     if (query.exec() && !attrID) {
-        query.exec(tr("alter table product_%1_attr "
-        "add %2 %3").arg(productID).arg(identifierEdit->text()).arg(dataFormatComboBox->currentText()));
+        // 查找产品下的所有设备id
+        query.exec(tr("select id from device where product_id=%1").arg(productID));
+        QSqlQuery attrQuery;
+        while (query.next()) {
+            attrQuery.exec(tr("alter table device_%1_attr add %2 %3").arg(query.value(0).toInt()).arg(
+                               identifierEdit->text()).arg(dataFormatComboBox->currentText()));
+        }
+//        query.exec(tr("alter table product_%1_attr "
+//        "add %2 %3").arg(productID).arg(identifierEdit->text()).arg(dataFormatComboBox->currentText()));
     }
     emit editFinished();
     this->close();

@@ -3,13 +3,11 @@
 #include "ui_homewidget.h"
 #include "devicewidget.h"
 #include <QDesktopWidget>
+#include <QDebug>
 
 HomeWidget::HomeWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::HomeWidget),
-    productWidget(new ProductWidget),
-    deviceWidget(new DeviceWidget),
-    analyseWidget(new AnalyseWidget)
+    ui(new Ui::HomeWidget)
 {
     // product表初始化
     QSqlError err = dbconn::dbProductInit();
@@ -25,6 +23,10 @@ HomeWidget::HomeWidget(QWidget *parent) :
     ui->setupUi(this);
     this->setFixedSize(1300,750);
     this->setStyleSheet("QPushButton {padding: 10px;}");
+
+    productWidget = new ProductWidget;
+    deviceWidget = new DeviceWidget;
+    analyseWidget = new AnalyseWidget;
 
     ui->stackedWidget->insertWidget(1, productWidget);
     ui->stackedWidget->insertWidget(2, deviceWidget);
@@ -67,6 +69,7 @@ void HomeWidget::showDeviceWidget()
 
 void HomeWidget::showAnalyseWidget()
 {
+    analyseWidget->refresh();
     ui->stackedWidget->setCurrentWidget(analyseWidget);
 }
 

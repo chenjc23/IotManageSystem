@@ -17,6 +17,7 @@ public slots:
     void updateChartView();
     void updateFormView();
     void unifiedUpdate();
+    void refresh(); // 外部窗口调用
 
 private:
     QComboBox * deviceBox;

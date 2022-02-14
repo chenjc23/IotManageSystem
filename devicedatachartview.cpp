@@ -3,9 +3,6 @@
 #include <QtWidgets>
 #include <QtCharts>
 #include <QtSql>
-#include <QDebug>
-
-
 
 DeviceDataChartView::DeviceDataChartView(int deviceID, const QString &identifier,
                 util::TimeSlot timeSlot, util::ChartType chartType, QWidget *parent) :
@@ -15,27 +12,17 @@ DeviceDataChartView::DeviceDataChartView(int deviceID, const QString &identifier
     timeSlot(timeSlot),
     chartType(chartType)
 {
-    this->setProductID();
     this->makeChart();
 
     this->setChart(chart);
     this->setRenderHint(QPainter::Antialiasing);
 }
 
-void DeviceDataChartView::setProductID()
-{
-    QSqlQuery query;
-    query.exec(tr("select product_id from device where id=%1").arg(deviceID));
-    query.first();
-    productID = query.value(0).toInt();
-}
-
 void DeviceDataChartView::setXYSeries()
 {
-    QString sql = tr("select time, %1 from product_%2_attr "
-            "where device_id=%3 and "
-            "time >= (now() - interval %4 hour) "
-            "order by time").arg(identifier).arg(productID).arg(deviceID).arg(timeSlot);
+    QString sql = tr("select time, %1 from device_%2_attr "
+            "where time >= (now() - interval %3 hour) "
+            "order by time").arg(identifier).arg(deviceID).arg(timeSlot);
     QSqlQuery query;
     query.exec(sql);
     while (query.next()) {

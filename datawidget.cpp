@@ -5,18 +5,18 @@
 #include <QSqlQuery>
 #include <QtWidgets>
 #include <QTimer>
+#include <QDebug>
 
 DataWidget::DataWidget(int deviceID, QWidget *parent) :
     QWidget(parent), deviceID(deviceID)
 {
-    this->getProductID();
     util::setBgColor(this, "#FFFFFF");
 
     // 模型与映射创建
     sqlModel = new QSqlQueryModel(this);
-    // 在对应产品属性表中提取所有属性值
-    QString sql = tr("select * from product_%1_attr where device_id=%2 "
-                     "order by id desc limit 1").arg(productID).arg(deviceID);
+    // 在设备属性表中提取最近的属性值
+    QString sql = tr("select * from device_%1_attr "
+                     "order by time desc limit 1").arg(deviceID);
     sqlModel->setQuery(sql);
     mapper = new QDataWidgetMapper(this);
     mapper->setModel(sqlModel);
@@ -28,11 +28,14 @@ DataWidget::DataWidget(int deviceID, QWidget *parent) :
     QGridLayout * mainLayout = new QGridLayout;
     mainLayout->setSpacing(15);
     // 根据属性个数依次创建DataBox
-    for (int attrNum = 3; attrNum < sqlModel->columnCount(); ++attrNum) {
+    for (int attrNum = 2; attrNum < sqlModel->columnCount(); ++attrNum) {
         QSqlQuery query;
-        query.prepare("select func_name, unit from attr "
-                      "where product_id=? and identifier=?");
-        query.addBindValue(productID);
+        query.prepare("select a.func_name, a.unit from attr a, device b "
+                      "where a.product_id=b.product_id and "
+                      "b.id=? and "
+                      "a.identifier=?");
+
+        query.addBindValue(deviceID);
         query.addBindValue(topRecord.fieldName(attrNum));
         query.exec();
         query.first();
@@ -43,7 +46,7 @@ DataWidget::DataWidget(int deviceID, QWidget *parent) :
         DataBox * dataBox;
         mainLayout->addWidget(dataBox = new DataBox(query.value(0).toString(),
                               data, query.value(1).toString()),
-                              (attrNum-3)/maxcolumn, (attrNum-3)%maxcolumn);
+                              (attrNum-2)/maxcolumn, (attrNum-2)%maxcolumn);
         mapper->addMapping(dataBox, attrNum, "data");
     }
 
@@ -83,19 +86,10 @@ DataWidget::DataWidget(int deviceID, QWidget *parent) :
     });
 }
 
-void DataWidget::getProductID()
-{
-    QSqlQuery query;
-    // 获取设备相应产品ID
-    query.exec(tr("select product_id from device where id=%1").arg(deviceID));
-    query.first();
-    productID = query.value(0).toInt();
-}
-
 void DataWidget::refresh()
 {
-    QString sql = tr("select * from product_%1_attr where device_id=%2 "
-                     "order by id desc limit 1").arg(productID).arg(deviceID);
+    QString sql = tr("select * from device_%1_attr "
+                     "order by id desc limit 1").arg(deviceID);
     sqlModel->setQuery(sql);
     mapper->toFirst();
 }

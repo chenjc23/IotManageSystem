@@ -12,14 +12,12 @@ class DataWidget : public QWidget
     Q_OBJECT
 public:
     explicit DataWidget(int deviceID, QWidget *parent = nullptr);
-    void getProductID();
 
 public slots:
     void refresh();
 
 private:
     int deviceID;
-    int productID;
     int maxcolumn = 5;
 
     QSqlQueryModel * sqlModel;

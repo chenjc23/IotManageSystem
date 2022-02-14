@@ -16,8 +16,6 @@ public:
 
 
 private:
-    int productID;
-
     int deviceID;
     const QString &identifier;
     util::TimeSlot timeSlot;
@@ -29,7 +27,6 @@ private:
     //QList<QPointF> dataList;
 
 private:
-    void setProductID();
     void setXYSeries();
     void setAxis();
 
