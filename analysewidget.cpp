@@ -36,6 +36,11 @@ AnalyseWidget::AnalyseWidget(QWidget *parent) : QWidget(parent),
     subLayout->setSpacing(0);
     subLayout->addWidget(chartTypeLabel = new QLabel("ChartType:"));
     subLayout->addWidget(chartTypeBox);
+    subLayout->addWidget(showAllAttrLabel = new QLabel("显示全部属性"));
+    subLayout->addWidget(showAllAttrBt = new ImgSwitchBt(":/picture/stateBt1.png",
+                                                         ":/picture/stateBt2.png"));
+    showAllAttrLabel->setVisible(false);
+    showAllAttrBt->setVisible(false);
     subLayout->addStretch();
     subLayout->addWidget(chartBt);
     subLayout->addWidget(formBt);
@@ -188,7 +193,12 @@ void AnalyseWidget::connectSignals()
         this->setPartVisible(false);
         this->updateFormView();
     });
-
+    // 显示全部属性按钮的信号连接
+    connect(showAllAttrBt, static_cast<void (ImgSwitchBt::*)(bool)>(&ImgSwitchBt::stateSwitched),
+            [=](bool state){
+        attrBox->setDisabled(state);
+        this->updateFormView();
+    });
 }
 
 void AnalyseWidget::unifiedUpdate()
@@ -263,10 +273,12 @@ void AnalyseWidget::updateChartView()
 void AnalyseWidget::updateFormView()
 {
     if (deviceBox->currentIndex()<0 or attrBox->currentIndex()<0) {
-        static_cast<DeviceDataFormView *>(formWidget)->clearModel();
+        formWidget->clearModel();
     } else {
-        static_cast<DeviceDataFormView *>(formWidget)->refresh(
-                    deviceBox->currentData().toInt(), attrBox->currentText());
+        if (!showAllAttrBt->getCurrentState())
+            formWidget->refresh(deviceBox->currentData().toInt(), attrBox->currentText());
+        else
+            formWidget->refresh(deviceBox->currentData().toInt());
     }
     stackWidget->setCurrentWidget(formWidget);
 }
@@ -277,5 +289,7 @@ void AnalyseWidget::setPartVisible(bool sign)
     chartTypeBox->setVisible(sign);
     timeLabel->setVisible(sign);
     timeBox->setVisible(sign);
+    showAllAttrLabel->setVisible(!sign);
+    showAllAttrBt->setVisible(!sign);
 }
 

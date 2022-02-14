@@ -3,6 +3,7 @@
 
 #include <QtWidgets>
 #include "devicedatachartview.h"
+#include "devicedataformview.h"
 #include "util.h"
 
 class AnalyseWidget : public QWidget
@@ -31,13 +32,15 @@ private:
     QList<QChartView *> chartViews;
 
     QLabel * chartTypeLabel;
+    QLabel * showAllAttrLabel;
+    ImgSwitchBt * showAllAttrBt;
     QLabel * timeLabel;
     QPushButton * chartBt;
     QPushButton * formBt;
 
     QStackedWidget * stackWidget;
     QWidget * chartWidget;
-    QWidget * formWidget;
+    DeviceDataFormView * formWidget;
 
     QComboBox * createDeviceBox();
     QComboBox * createAttrBox();

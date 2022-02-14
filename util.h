@@ -61,6 +61,7 @@ public:
     explicit ImgSwitchBt(const QString &img1, const QString &img2 = "",
                          int w = 40, int h = 20, QWidget *parent = nullptr);
     ~ImgSwitchBt();
+    bool getCurrentState();
 
 signals:
     void stateSwitched(bool state);

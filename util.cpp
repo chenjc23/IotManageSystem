@@ -209,6 +209,11 @@ ImgSwitchBt::~ImgSwitchBt()
 
 }
 
+bool ImgSwitchBt::getCurrentState()
+{
+    return currentState;
+}
+
 int util::getProductID(int deviceID)
 {
     QSqlQuery query;
