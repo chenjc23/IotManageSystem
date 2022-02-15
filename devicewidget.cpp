@@ -129,6 +129,8 @@ void DeviceWidget::refresh(const QString &text)
 void DeviceWidget::showEditDeviceWidget(int id)
 {
     EditDeviceWidget * widget = new EditDeviceWidget(id);
+    widget->setAttribute(Qt::WA_DeleteOnClose);
+    widget->setWindowModality(Qt::ApplicationModal);
     widget->show();
     connect(widget, &EditDeviceWidget::editFinished, [=]{
         this->refresh();
