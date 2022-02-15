@@ -40,9 +40,6 @@ ProductWidget::ProductWidget(QWidget *parent) :
     mainLayout -> addWidget(headTitle);
     mainLayout -> addWidget(title);
     mainLayout -> addLayout(funcLayout);
-    mainLayout -> setStretchFactor(headTitle, 1);
-    mainLayout -> setStretchFactor(title, 1);
-    mainLayout -> setStretchFactor(funcLayout, 1);
     this -> setLayout(mainLayout);
 
     // 模型与视图
@@ -60,7 +57,7 @@ ProductWidget::ProductWidget(QWidget *parent) :
     this->refresh();
 
     mainLayout -> addWidget(productView);
-    mainLayout -> setStretchFactor(productView, 30);
+    mainLayout -> setStretchFactor(productView, 20);
 
     connect(createProductBt, SIGNAL(clicked()), this, SLOT(onCreateBtClicked()));
 
