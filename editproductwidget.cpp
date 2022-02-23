@@ -4,7 +4,7 @@
 #include <QtWidgets>
 #include "util.h"
 #include <QtSql>
-#include <QDebug>
+#include <QMessageBox>
 
 EditProductWidget::EditProductWidget(int productID, QWidget *parent) :
     QWidget(parent),
@@ -128,6 +128,7 @@ EditProductWidget::EditProductWidget(int productID, QWidget *parent) :
 
 void EditProductWidget::onConfirmBtClicked()
 {
+    if (!this->validityCheck()) return;
     QString updateSql;
     if (productID) {
         updateSql = "update product set name=?, "
@@ -276,5 +277,25 @@ void EditProductWidget::setMapper()
         }
     }
     mapper->toFirst();
+}
+
+bool EditProductWidget::validityCheck()
+{
+    QString err;
+    if (nameEdit->text().isEmpty())
+        err = "产品名称不能为空。";
+    else {
+        QSqlQuery query;
+        query.prepare("select id from product where name=?");
+        query.addBindValue(nameEdit->text());
+        query.exec();
+        if (query.first() and (!productID or (productID and query.value(0).toInt() !=productID)))
+            err = "相同名称的产品已经存在。";
+    }
+    if (err.isEmpty()) return true;
+    else {
+        QMessageBox::critical(this, "IotManageSystem", err);
+        return false;
+    }
 }
 

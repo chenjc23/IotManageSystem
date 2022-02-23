@@ -20,6 +20,7 @@ private:
     void setBtGroup();
     bool setSqlModel();
     void setMapper();
+    bool validityCheck();
 
 private:
     int productID;

@@ -2,20 +2,21 @@
 #include <QtSql>
 #include <QtWidgets>
 #include <QDesktopWidget>
+#include <QSettings>
 
 QSqlDatabase dbconn::getDbOpenConn(QWidget *parent, QString name)
 {
-    Config config;
+    QSettings settings("../config.ini", QSettings::IniFormat);
     QSqlDatabase db;
     if (!name.isEmpty())
         db = QSqlDatabase::addDatabase("QMYSQL", name);
     else
         db = QSqlDatabase::addDatabase("QMYSQL");
 
-    db.setDatabaseName(config.dbDatabaseName);
-    db.setHostName(config.dbHostName);
-    db.setUserName(config.dbUserName);
-    db.setPassword(config.dbPassword);
+    db.setDatabaseName(settings.value("db/dbName").toString());
+    db.setHostName(settings.value("db/hostName").toString());
+    db.setUserName(settings.value("db/userName").toString());
+    db.setPassword(settings.value("db/password").toString());
     if (!db.open()) {
         if (parent)
             QMessageBox::information(parent, "DB Connection Fail", "无法连接数据库");
@@ -179,12 +180,37 @@ void util::setBgColor(QWidget *widget, const QString &color)
 }
 
 
+ImgSwitchBt::ImgSwitchBt(QWidget *parent) :
+    QPushButton(parent),
+    width(40),
+    height(20),
+    normalImgPath(":/picture/stateBt1.png"),
+    pressedImgPath(":/picture/stateBt2.png")
+{
+    this->init();
+}
+
 ImgSwitchBt::ImgSwitchBt(const QString &img1, const QString &img2, int w, int h, QWidget *parent) :
     QPushButton(parent),
     width(w),
     height(h),
     normalImgPath(img1),
     pressedImgPath(img2)
+{
+    this->init();
+}
+
+ImgSwitchBt::~ImgSwitchBt()
+{
+
+}
+
+bool ImgSwitchBt::getCurrentState()
+{
+    return currentState;
+}
+
+void ImgSwitchBt::init()
 {
     QPixmap pix;
     pix.load(normalImgPath);
@@ -202,16 +228,6 @@ ImgSwitchBt::ImgSwitchBt(const QString &img1, const QString &img2, int w, int h,
             this->setIcon(QPixmap(normalImgPath));
         emit this->stateSwitched(currentState);
     });
-}
-
-ImgSwitchBt::~ImgSwitchBt()
-{
-
-}
-
-bool ImgSwitchBt::getCurrentState()
-{
-    return currentState;
 }
 
 int util::getProductID(int deviceID)

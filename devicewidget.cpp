@@ -1,5 +1,4 @@
 #include "devicewidget.h"
-#include "ui_devicewidget.h"
 #include "util.h"
 #include "labels.h"
 #include "editdevicewidget.h"
@@ -8,11 +7,8 @@
 #include <QSqlQueryModel>
 
 DeviceWidget::DeviceWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::DeviceWidget)
+    QWidget(parent)
 {
-    ui->setupUi(this);
-
     // 控件创建
     QLabel * headTitle = new QLabel("物联网平台 / 设备管理 / 设备");
     QLabel * title = new QLabel("设备");
@@ -82,7 +78,6 @@ DeviceWidget::DeviceWidget(QWidget *parent) :
 
 DeviceWidget::~DeviceWidget()
 {
-    delete ui;
 }
 
 void DeviceWidget::refresh(const QString &text)

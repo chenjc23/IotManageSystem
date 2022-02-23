@@ -33,6 +33,7 @@ private:
 private:
     void setProductComboBox();
     void setMapperWithModel();
+    bool validityCheck();
 
 signals:
     void editFinished();

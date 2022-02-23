@@ -54,8 +54,7 @@ EditDeviceWidget::EditDeviceWidget(int deviceID, QWidget *parent) :
     this->setFixedSize(300, 350);
     this->setAttribute(Qt::WA_DeleteOnClose);
     util::setCenterShow(this);
-    this->setWindowFlags(windowFlags() |
-               Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    this->setWindowFlag(Qt::FramelessWindowHint);
     this->setLayout(mainLayout);
 
     // 控件信号连接
@@ -69,16 +68,12 @@ EditDeviceWidget::EditDeviceWidget(int deviceID, QWidget *parent) :
 
 void EditDeviceWidget::onConfirmBtClicked()
 {
+    if (!this->validityCheck()) return;
     // sql操作
     QString updateSql;
     QSqlQuery query;
     // 针对添加设备
     if (!deviceID) {
-//        query.prepare("select id from product where name=?");
-//        query.addBindValue(productComboBox->currentText());
-//        query.exec();
-//        query.first();
-//        int productID = query.value(0).toInt();
         int productID = productComboBox->currentData().toInt();
         updateSql = "insert into device (product_id,"
                     "name,"
@@ -149,6 +144,30 @@ void EditDeviceWidget::setMapperWithModel()
     mapper->addMapping(ipEdit, 3);
     mapper->toFirst();
     productComboBox->setDisabled(true);
+}
+
+bool EditDeviceWidget::validityCheck()
+{
+    QString err;
+    if (productComboBox->currentIndex() < 0) {
+        err = "请先选择产品。";
+    } else if (nameEdit->text().isEmpty()) {
+        err = "设备名称不能为空。";
+    } else if (ipEdit->text().isEmpty()) {
+        err = "设备IP地址不能为空。";
+    } else {
+        QSqlQuery query;
+        query.prepare("select id from device where name=?");
+        query.addBindValue(nameEdit->text());
+        query.exec();
+        if (query.first() and (!deviceID or (deviceID and query.value(0).toInt() !=deviceID)))
+            err = "设备名称已存在。";
+    }
+    if (err.isEmpty()) return true;
+    else {
+        QMessageBox::critical(this, "IotManageSystem", err);
+        return false;
+    }
 }
 
 

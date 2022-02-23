@@ -69,7 +69,8 @@
         <item>
          <widget class="QPushButton" name="productBt">
           <property name="styleSheet">
-           <string notr="true">font: 14pt &quot;宋体&quot;;background-color: #f5f5f5;</string>
+           <string notr="true">QPushButton{font: 14pt &quot;宋体&quot;;background-color: #f5f5f5;border: transparent;} 
+QPushButton:hover{background-color: #CCCCCC;font: bold;}</string>
           </property>
           <property name="text">
            <string>产品 </string>
@@ -79,7 +80,8 @@
         <item>
          <widget class="QPushButton" name="deviceBt">
           <property name="styleSheet">
-           <string notr="true">font: 14pt &quot;宋体&quot;;background-color: #f5f5f5;</string>
+           <string notr="true">QPushButton{font: 14pt &quot;宋体&quot;;background-color: #f5f5f5;border: transparent;} 
+QPushButton:hover{background-color: #CCCCCC;font: bold;}</string>
           </property>
           <property name="text">
            <string>设备 </string>
@@ -89,7 +91,8 @@
         <item>
          <widget class="QPushButton" name="groupBt">
           <property name="styleSheet">
-           <string notr="true">font: 14pt &quot;宋体&quot;;background-color: #f5f5f5;</string>
+           <string notr="true">QPushButton{font: 14pt &quot;宋体&quot;;background-color: #f5f5f5;border: transparent;} 
+QPushButton:hover{background-color: #CCCCCC;font: bold;}</string>
           </property>
           <property name="text">
            <string>分组 </string>
@@ -116,6 +119,16 @@
        </property>
        <property name="text">
         <string> 文档与工具  </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="serverBt">
+       <property name="styleSheet">
+        <string notr="true">font: bold 16pt &quot;宋体&quot;;</string>
+       </property>
+       <property name="text">
+        <string>Server进程</string>
        </property>
       </widget>
      </item>

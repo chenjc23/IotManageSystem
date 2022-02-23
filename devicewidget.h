@@ -6,9 +6,6 @@
 #include <QSqlQueryModel>
 #include <QTableView>
 
-namespace Ui {
-class DeviceWidget;
-}
 
 class DeviceWidget : public QWidget
 {
@@ -29,8 +26,6 @@ public slots:
 
 
 private:
-    Ui::DeviceWidget *ui;
-
     QComboBox * productChooseComboBox;
     BlueBt * addDeviceBt;
     QLineEdit * searchEdit;

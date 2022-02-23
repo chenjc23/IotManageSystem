@@ -5,6 +5,8 @@
 #include "productwidget.h"
 #include "devicewidget.h"
 #include "analysewidget.h"
+#include "groupingwidget.h"
+#include "serverwidget.h"
 
 namespace Ui {
 class HomeWidget;
@@ -23,6 +25,8 @@ public slots:
     void showProductWidget();
     void showDeviceWidget();
     void showAnalyseWidget();
+    void showGroupingWidget();
+    void showServerWidget();
 
 
 private:
@@ -30,7 +34,8 @@ private:
     ProductWidget * productWidget;
     DeviceWidget * deviceWidget;
     AnalyseWidget * analyseWidget;
-
+    GroupingWidget * groupingWidget;
+    ServerWidget * serverWidget;
 };
 
 #endif // HOMEWIDGET_H

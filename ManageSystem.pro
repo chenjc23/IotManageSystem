@@ -1,4 +1,4 @@
-QT       += core gui sql
+QT += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets charts
 
@@ -25,11 +25,13 @@ SOURCES += \
     editdevicewidget.cpp \
     editfuncwidget.cpp \
     editproductwidget.cpp \
+    groupingwidget.cpp \
     homewidget.cpp \
     labels.cpp \
     main.cpp \
     entrywidget.cpp \
     productwidget.cpp \
+    serverwidget.cpp \
     util.cpp \
     viewdevicewidget.cpp \
     viewproductwidget.cpp
@@ -45,18 +47,19 @@ HEADERS += \
     editfuncwidget.h \
     editproductwidget.h \
     entrywidget.h \
+    groupingwidget.h \
     homewidget.h \
     labels.h \
     productwidget.h \
+    serverwidget.h \
     util.h \
     viewdevicewidget.h \
     viewproductwidget.h
 
 FORMS += \
-    devicewidget.ui \
     entrywidget.ui \
     homewidget.ui \
-    productwidget.ui
+    serverwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

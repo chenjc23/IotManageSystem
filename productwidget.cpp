@@ -1,5 +1,4 @@
 #include "productwidget.h"
-#include "ui_productwidget.h"
 #include "util.h"
 #include "labels.h"
 #include "editproductwidget.h"
@@ -9,11 +8,9 @@
 #include <QDebug>
 
 ProductWidget::ProductWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::ProductWidget)
+    QWidget(parent)
 {
     // 创建产品界面控件
-    ui->setupUi(this);
     QLabel * headTitle = new QLabel("物联网平台 / 设备管理 / 产品");
     QLabel * title = new QLabel("产品（设备模型）");
     createProductBt = new QPushButton("创建产品");
@@ -66,7 +63,7 @@ ProductWidget::ProductWidget(QWidget *parent) :
 
 ProductWidget::~ProductWidget()
 {
-    delete ui;
+
 }
 
 void ProductWidget::refresh()

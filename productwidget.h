@@ -6,10 +6,6 @@
 #include <QTableView>
 #include "util.h"
 
-namespace Ui {
-class ProductWidget;
-}
-
 class ProductWidget : public QWidget
 {
     Q_OBJECT
@@ -28,8 +24,6 @@ public slots:
     void deleteProduct(int itemId);  
 
 private:
-    Ui::ProductWidget *ui;
-    // QSqlQueryModel * productModel;
     QPushButton * createProductBt;
     CenterAlignSqlModel * productModel;
     QTableView * productView;
